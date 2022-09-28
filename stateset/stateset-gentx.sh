@@ -62,11 +62,11 @@ cd core
 starport chain build
 
 # config
-statesetd config chain-id $CHAIN_ID
+statesetd config chain-id $STATESET_CHAIN_ID
 statesetd config keyring-backend test
 
 # init
-statesetd init $NODENAME --chain-id $CHAIN_ID
+statesetd init $NODENAME --chain-id $STATESET_CHAIN_ID
 
 
 
