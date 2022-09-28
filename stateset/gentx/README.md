@@ -20,11 +20,26 @@
 ```
 wget -O stateset-gentx.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/stateset/stateset-gentx.sh && chmod +x stateset-gentx.sh && ./stateset-gentx.sh
 ```
+## Post Installation (Load variable)
+```
+source $HOME/.bash_profile
+```
 
 ## Set your wallet genesis
 ```
 WALLET_ADDRESS=$(statesetd keys show $WALLET -a)
 statesetd add-genesis-account $WALLET_ADDRESS 10000000000ustate
+```
+
+## Create wallet
+Create new wallet with this command
+```
+statesetd keys add $WALLET
+```
+
+Or recover your existing wallet 
+```
+statesetd keys add $WALLET --recover
 ```
 
 ## Create Gentx
