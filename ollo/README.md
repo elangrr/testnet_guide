@@ -147,6 +147,11 @@ s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|" $HOME/.ollo/config/config.toml
 ollod tendermint unsafe-reset-all --home $HOME/.ollo --keep-addr-book
 systemctl restart ollod && journalctl -u ollod -f -o cat
 ```
+### Turn off state-sync after synced
+```
+sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1false|" $HOME/.ollo/config/config.toml
+```
+
 ## Create and start your service
 ```
 sudo tee /etc/systemd/system/ollod.service > /dev/null <<EOF
