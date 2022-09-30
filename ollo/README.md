@@ -73,6 +73,15 @@ To recover your existing wallet (OPTIONAL) run the command below
 ollod keys add $WALLET --recover
 ```
 
+## Save Wallet Info
+```
+OLLO_WALLET_ADDRESS=$(ollod keys show $WALLET -a)
+OLLO_VALOPER_ADDRESS=$(ollod keys show $WALLET --bech val -a)
+echo 'export OLLO_WALLET_ADDRESS='${OLLO_WALLET_ADDRESS} >> $HOME/.bash_profile
+echo 'export OLLO_VALOPER_ADDRESS='${OLLO_VALOPER_ADDRESS} >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
+
 ## Download Genesis file
 ```
 wget -O $HOME/.ollo/config/genesis.json https://raw.githubusercontent.com/elangrr/testnet_guide/main/ollo/genesis.json
