@@ -47,8 +47,6 @@ sudo ufw allow 9152
 
 ## Case #1
 ## #1 My Staking account and worker account is available
-
-### Update Case #1
 ### If you still have Staking account and worker account simply stop the docker
 
 - Run `docker ps` to see currently running container
@@ -80,8 +78,6 @@ nulink/nulink nulink ursula run --no-block-until-read
 
 ## Case #2
 ### Staking account or worker account is lost
-
-### Update Case #2
 Case #2 Is a little bit tricky since you have to switch port to 9152
 
 If the staking account or the worker account is lost(this means either you can not login your staking account in Metamask or your keystore file in host directory is deleted), then the update procedure is a little bit complex. Here is the suggest way.
