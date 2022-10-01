@@ -75,6 +75,7 @@ docker run --restart on-failure -d \
 -e NULINK_OPERATOR_ETH_PASSWORD \
 nulink/nulink nulink ursula run --no-block-until-read
 ```
+Then everything is done ! You dont have to bond again
 
 ## Case #2
 ### Staking account or worker account is lost
@@ -97,6 +98,10 @@ change `<containerID>` with container ID after you run `docker ps` to stop the n
 - Remove the running docker node
 ```
 docker rm ursula
+```
+- Pull latest nulink image
+```
+ docker pull nulink/nulink:latest
 ```
 
 ### delete the old host directory and create a new host directory 
