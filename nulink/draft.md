@@ -43,7 +43,7 @@ sudo ufw allow 9152
 ```
 `NOTE : AZURE USER OPEN PORT IN THEIR PANEL !!!`
 
-# There is 2 Case here so please choose your scenario
+# There is 2 Case here so please choose your case accordingly!!!
 
 ## Case #1
 ## #1 My Staking account and worker account is available
