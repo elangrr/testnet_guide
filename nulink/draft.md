@@ -132,6 +132,7 @@ chmod -R 777 /root/nulink
 ```
 wget -O nulink.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/nulink/nulink.sh && chmod +x nulink.sh && ./nulink.sh
 ```
+You will be asked to enter Keystore password , use simple and strong password that you can remember
 
 ### Set Variable
 ```
@@ -207,14 +208,7 @@ Output :
 ![image](https://user-images.githubusercontent.com/34649601/190843374-510026ec-7996-483f-a7a1-a42ed800cd82.png)
 After that your job to run node is complete now lets go to the next step.
 
-# Staking 
-- Go to Staking page [https://test-staking.nulink.org/faucet](https://test-staking.nulink.org/faucet)
-- Connect your Metamask , You can use any Metamask account
-- Get BSC Testnet token in [BNB Faucet](https://testnet.binance.org/faucet-smart) 
-- When you get your test BSC now ask for faucet in Nulink Faucet
-- Go to [Staking](https://test-staking.nulink.org/) Page and Stake your Nulink and Press Confirm and approve transaction in your Metamask
-![image](https://user-images.githubusercontent.com/34649601/190844037-d1d9c0a6-f186-4597-a18d-8a776c598291.png)
- ### Bond Worker
+### Bond your worker 
  Scroll down and click `Bond Worker`
 ![image](https://user-images.githubusercontent.com/34649601/190844089-ab76c8e4-d0f5-4269-958d-7c368347ecea.png)
  Fill the form (PICTURE ONLY EXAMPLE )
