@@ -42,7 +42,7 @@ sudo ufw allow 9151
 ## Auto Install
 Run the following command to install in minutes
 ```
-wget -O nulink.sh https://raw.githubusercontent.com/elangrr/testnet_manuals/main/nulink/nulink.sh && chmod +x nulink.sh && ./nulink.sh
+wget -O nulink.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/nulink/nulink.sh && chmod +x nulink.sh && ./nulink.sh
 ```
 ### Post-Installation (Save your KEY!!)
 After running auto Installation you will need to put `Password` Twice.
