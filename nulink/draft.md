@@ -99,7 +99,7 @@ change `<containerID>` with container ID after you run `docker ps` to stop the n
 ```
 docker rm ursula
 ```
-- Pull latest nulink image
+### Pull latest nulink image
 ```
  docker pull nulink/nulink:latest
 ```
