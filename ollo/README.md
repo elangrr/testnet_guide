@@ -44,13 +44,9 @@ source $HOME/.bash_profile
 ```
 
 ### Packages and Depencies
-Update Package
-```
-sudo apt update && sudo apt upgrade -y
-```
 Install Depencies
 ```
-sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install make clang pkg-config libssl-dev build-essential git jq llvm libudev-dev -y
 ```
 
 ### Install GO 1.18+
@@ -88,7 +84,9 @@ ollod init $NODENAME --chain-id $OLLO_CHAIN_ID
 
 ### Download Genesis and Addrbook
 ```
-curl https://raw.githubusercontent.com/OllO-Station/ollo/master/networks/ollo-testnet-0/genesis.json | jq .result.genesis > $HOME/.ollo/config/genesis.json
+wget -qO $HOME/.ollo/config/genesis.json https://github.com/AlexToTheMoon/AM-Solutions/raw/main/ollo-genesis.json
+wget -qO $HOME/.ollo/config/addrbook.json https://github.com/AlexToTheMoon/AM-Solutions/raw/main/ollo-addrbook.json
+ollod tendermint unsafe-reset-all --home $HOME/.ollo --keep-addr-book
 ```
 
 ### Set Peers 
