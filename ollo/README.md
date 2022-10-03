@@ -15,8 +15,7 @@
   <img height="150" height="auto" src="https://user-images.githubusercontent.com/50621007/192699071-461d8ff6-6ddf-4d4f-aba7-d3ddcc4a5563.png">
 </p>
 
-# Point Network Mainnet
-
+# Ollo Station Testnet
 ## [Official Guide](https://docs.ollo.zone/validators/running_a_node)
 
 
