@@ -190,7 +190,7 @@ docker run --restart on-failure -d \
 -e NULINK_OPERATOR_ETH_PASSWORD \
 nulink/nulink nulink ursula run \
 --rest-port 9152 \
---config-file /root/nulink/ursula.json \
+--config-file /home/circleci/.local/share/nulink/ursula.json \
  --no-block-until-ready
 ```
 ### Check logs 
