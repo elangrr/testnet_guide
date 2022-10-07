@@ -76,14 +76,6 @@ go mod tidy
 make install
 ```
 
-### Set Directory and Symlink
-```
-mkdir -p ~/.mun/upgrade_manager/upgrades
-mkdir -p ~/.mun/upgrade_manager/genesis/bin
-cp $(which mund) ~/.mun/upgrade_manager/genesis/bin
-sudo cp $(which mund-manager) /usr/bin
-```
-
 ### Init your node
 ```
 mund init $NODENAME --chain-id $MUN_CHAIN_ID
@@ -96,10 +88,10 @@ curl --tlsv1 https://node1.mun.money/genesis? | jq ".result.genesis" > ~/.mun/co
 
 ### Update seed
 ```
-SEEDS="6a08f2f76baed249d3e3c666aaef5884e4b1005c@167.71.0.38:26656"
+SEEDS="9240277fca3bfa0c3b94efa60215ca10cf54f249@45.76.68.116:26656"
 sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.mun/config/config.toml
 ```
-If the seeds doesnt work use these :
+If the seeds doesnt work use one of these seeds :
 - seed1 = "b4eeaf7ca17e5186b181885714cedc6a78d20c9b@167.99.6.48:26656" 
 - seed2 = "6a08f2f76baed249d3e3c666aaef5884e4b1005c@167.71.0.38:26656" 
 - seed3 = "9240277fca3bfa0c3b94efa60215ca10cf54f249@45.76.68.116:26656"
@@ -113,26 +105,15 @@ sed -i 's/stake/utmun/g' ~/.mun/config/genesis.json
 ```
 sudo tee /etc/systemd/system/mund.service > /dev/null <<EOF
 [Unit]
-Description=mund
-Requires=network-online.target
+Description=mun
 After=network-online.target
 
 [Service]
+User=$USER
+ExecStart=$(which mund) start --home $HOME/.mun --pruning="nothing" --rpc.laddr "tcp://0.0.0.0:26657"
 Restart=on-failure
 RestartSec=3
-User=root
-Group=root
-Environment=DAEMON_NAME=mund
-Environment=DAEMON_HOME=/root/.mun
-Environment=DAEMON_ALLOW_DOWNLOAD_BINARIES=on
-Environment=DAEMON_RESTART_AFTER_UPGRADE=on
-PermissionsStartOnly=true
-ExecStart=/usr/bin/mund-manager start --pruning="nothing" --rpc.laddr "tcp://0.0.0.0:26657"
-StandardOutput=file:/var/log/mund/mund.log
-StandardError=file:/var/log/mund/mund_error.log
-ExecReload=/bin/kill -HUP $MAINPID
-KillSignal=SIGTERM
-LimitNOFILE=4096
+LimitNOFILE=65535
 
 [Install]
 WantedBy=multi-user.target
