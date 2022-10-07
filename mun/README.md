@@ -63,16 +63,8 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl build-essential 
 
 ### Install Latest version of GO (1.18+)
 ```
-if ! [ -x "$(command -v go)" ]; then
-  ver="1.18.2"
-  cd $HOME
-  wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
-  sudo rm -rf /usr/local/go
-  sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
-  rm "go$ver.linux-amd64.tar.gz"
-  echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
-  source ~/.bash_profile
-fi
+wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash -s -- --version 1.18
+source ~/.profile
 ```
 
 ### Install Binaries
