@@ -61,7 +61,7 @@ source $HOME/.bash_profile
 sudo apt update && sudo apt upgrade -y && sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
 ```
 
-### Install Latest version of GO (1.19)
+### Install Latest version of GO (1.18+)
 ```
 if ! [ -x "$(command -v go)" ]; then
   ver="1.18.2"
