@@ -26,7 +26,7 @@ clear
 echo -e "\e[1;33m2. Installing dependencies... \e[0m"
 sleep 1
 # packages
-sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk
+sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
 clear
 echo -e "\e[1;33m3. Downloading and building binaries... \e[0m"
  sleep 1
