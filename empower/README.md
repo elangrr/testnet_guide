@@ -175,7 +175,7 @@ To check your sync status : `empowerd status 2>&1 | jq .SyncInfo`
 
 if the `catching_up` stated `false` then your node is already synced and you can proceed create validator
 
-IF YOUR PEERS IS NOT CONNECTED USE SNAPSHOT!! SCROLL DOWN!!!
+IF YOUR PEERS IS NOT CONNECTED USE [SNAPSHOT](https://github.com/elangrr/testnet_guide/blob/main/empower/README.md? plain=1#L209)
 
 Get the faucet on Empower discord server 
 
