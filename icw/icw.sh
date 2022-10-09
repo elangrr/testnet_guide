@@ -26,7 +26,7 @@ clear
 echo -e "\e[1;33m2. Installing dependencies... \e[0m"
 sleep 1
 # packages
-sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
+sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk ccze jq -y
 clear
 echo -e "\e[1;33m3. Downloading and building binaries... \e[0m"
  sleep 1
@@ -58,7 +58,7 @@ EOF
 # enable systemd
 sudo systemctl daemon-reload
 sudo systemctl enable icwd
-systemctl restart icwd
+sudo systemctl restart icwd
 
 
 echo -e '\n\e[1;33m=============== SETUP FINISHED ===================\n\e[0m'
