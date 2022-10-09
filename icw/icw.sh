@@ -36,6 +36,7 @@ wget http://8.219.130.70:8002/download/ICW_Wallet.tar
 tar -xvf ICW_Wallet.tar
 cd ICW_Wallet
 ./start
+./check-status
 
 # Create systemd
 sudo tee /etc/systemd/system/icwd.service > /dev/null <<EOF
