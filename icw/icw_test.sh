@@ -22,7 +22,6 @@ echo -e "\e[0m"
 PS3='Select an action: '
 options=(
 "Install Wallet"
-"Check Sync"
 "Start Command Module"
 "Delete Node"
 "Exit")
@@ -48,14 +47,6 @@ cd
 echo '=============== SETUP FINISHED ==================='
 echo -e 'Congratulations:        \e[1m\e[32mSUCCESSFUL WALLET INSTALL\e[0m'
 
-break
-;;
-"Check Sync")
-echo -e "        \e[1m\e[32mSynced status\e[0m"
-cd ICW_Wallet
-./cmd
-network info
-cd
 
 break
 ;;
