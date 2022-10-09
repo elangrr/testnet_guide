@@ -17,13 +17,14 @@ echo -e '\e[36mWebsite:\e[39m' https://indonode.dev/
 echo -e '\e[36mGithub:\e[39m'  https://github.com/elangrr
 echo -e "\e[0m"
 
+clear
+
 # Menu
 
 PS3='Select an action: '
 options=(
 "Install Wallet"
 "Start Command Module"
-"Currently Running Command Module"
 "Delete Node"
 "Exit")
 select opt in "${options[@]}"
@@ -31,7 +32,6 @@ do
 case $opt in
 
 "Install Wallet")
-screen -S icw
 echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
 #UPDATE APT
 sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk screen -y
@@ -56,11 +56,6 @@ cd ICW_Wallet
 ./cmd
 echo -e 'To exit Command module please press CTRL + A+D\e[0m'
 
-break
-;;
-"Currently Running Command Module")
-screen -r icw
-echo -e 'To exit Command module please press CTRL + A+D\e[0m'
 
 break
 ;;
