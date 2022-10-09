@@ -165,7 +165,7 @@ mund tx staking create-validator \
 	--from $WALLET \
 	--moniker $NODENAME \
 	--pubkey $(mund tendermint show-validator) \
-	--chain-id MUN_CHAIN_ID \
+	--chain-id $MUN_CHAIN_ID \
 	--amount 50000000000utmun \
 	--commission-max-change-rate 0.01 \
 	--commission-max-rate 0.2 \
