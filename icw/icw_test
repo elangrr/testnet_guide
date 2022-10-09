@@ -69,7 +69,7 @@ break
 "Delete Node")
 cd $HOME && \
 rm -rf ICW_Wallet && \
-rm -rf ICW_Wallet.tar && \
+rm -rf ICW_Wallet.tar
 
 break
 ;;
