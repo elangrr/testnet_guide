@@ -3,6 +3,8 @@
 while true
 do
 
+clear
+
 # Logo
 
 echo -e "\033[0;35m"
@@ -16,8 +18,6 @@ echo " =========================================================================
 echo -e '\e[36mWebsite:\e[39m' https://indonode.dev/
 echo -e '\e[36mGithub:\e[39m'  https://github.com/elangrr
 echo -e "\e[0m"
-
-clear
 
 # Menu
 
