@@ -181,7 +181,10 @@ Get the faucet on Empower discord server
 
 `$request <wallet address> altruistic-1`
 ### Create validator
-After your node is synced you can create your node 
+After your node is synced you can create your node make sure you have balance
+```
+empowerd query bank balances $EMPOWER_WALLET_ADDRESS
+```
 ```
 empowerd tx staking create-validator \
 --amount 1000000umpwr \
