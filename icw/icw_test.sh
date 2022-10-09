@@ -3,7 +3,6 @@
 while true
 do
 
-clear
 
 # Logo
 
@@ -34,7 +33,7 @@ case $opt in
 "Install Wallet")
 echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
 #UPDATE APT
-sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk screen -y
+sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
 
 echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
 #INSTALL
