@@ -34,9 +34,6 @@ echo -e "\e[1;33m3. Downloading and building binaries... \e[0m"
 # download wallet and decompress
 wget http://8.219.130.70:8002/download/ICW_Wallet.tar
 tar -xvf ICW_Wallet.tar
-cd ICW_Wallet
-./start
-./check-status
 
 # Create systemd
 sudo tee /etc/systemd/system/icwd.service > /dev/null <<EOF
@@ -50,9 +47,6 @@ Type=simple
 ExecStart=$HOME/ICW_Wallet/./cmd
 Restart=on-failure
 LimitNOFILE=65535
-
-Environment=/usr/bin/java
-Environment=/ICW_Wallet/
 
 [Install]
 WantedBy=multi-user.target
