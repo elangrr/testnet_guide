@@ -199,6 +199,8 @@ empowerd tx staking create-validator \
 --pubkey $(empowerd tendermint show-validator) \
 --moniker $NODENAME \
 --chain-id $EMPOWER_CHAIN_ID \
+--gas auto \
+--fees 200000umpwr \
 -y
 ```
 
