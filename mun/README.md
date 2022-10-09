@@ -146,7 +146,11 @@ mund keys list
 ### Save wallet info
 ```
 MUN_WALLET_ADDRESS=$(mund keys show $WALLET -a)
+```
+```
 MUN_VALOPER_ADDRESS=$(mund keys show $WALLET --bech val -a)
+```
+```
 echo 'export MUN_WALLET_ADDRESS='${MUN_WALLET_ADDRESS} >> $HOME/.bash_profile
 echo 'export MUN_VALOPER_ADDRESS='${MUN_VALOPER_ADDRESS} >> $HOME/.bash_profile
 source $HOME/.bash_profile
