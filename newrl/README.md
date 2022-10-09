@@ -21,7 +21,10 @@
 ## Newrl Miners Setup Guide
 
 ### Ports
-Open your VPS port in VPS / Panel
+Run as Root user and Open your VPS port in VPS / Panel
+```
+sudo su
+```
 ```
 sudo ufw allow ssh 
 sudo ufw allow 8421
@@ -56,9 +59,11 @@ sudo apt install python3.9
 curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python3 get-pip.py
 sudo apt install python3.9-venv
+```
+```
 sudo mkdir newrl-venv
 cd newrl-venv
-python3.9 -m venv newrl-venv
+sudo python3.9 -m venv newrl-venv
 ```
 
 ### Activate your environment
