@@ -51,6 +51,9 @@ ExecStart=$HOME/ICW_Wallet/./cmd
 Restart=on-failure
 LimitNOFILE=65535
 
+Environment=/usr/bin/java
+Environment=/ICW_Wallet/
+
 [Install]
 WantedBy=multi-user.target
 EOF
