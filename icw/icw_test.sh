@@ -31,14 +31,13 @@ do
 case $opt in
 
 "Install Wallet")
-
+screen -S icw
 echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
 #UPDATE APT
 sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk screen -y
 
 echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
 #INSTALL
-screen -S icw
 wget http://8.219.130.70:8002/download/ICW_Wallet.tar
 tar -xvf ICW_Wallet.tar
 cd ICW_Wallet
