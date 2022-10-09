@@ -23,6 +23,7 @@ PS3='Select an action: '
 options=(
 "Install Wallet"
 "Start Command Module"
+"Currently Running Command Module"
 "Delete Node"
 "Exit")
 select opt in "${options[@]}"
@@ -33,10 +34,11 @@ case $opt in
 
 echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
 #UPDATE APT
-sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
+sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk screen -y
 
 echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
 #INSTALL
+screen -S icw
 wget http://8.219.130.70:8002/download/ICW_Wallet.tar
 tar -xvf ICW_Wallet.tar
 cd ICW_Wallet
@@ -45,7 +47,7 @@ cd ICW_Wallet
 cd
 
 echo '=============== SETUP FINISHED ==================='
-echo -e 'Congratulations:        \e[1m\e[32mSUCCESSFUL WALLET INSTALL\e[0m'
+echo -e 'Congratulations:        \e[1m\e[32mSUCCESSFULLY INSTALLED WALLET\e[0m'
 
 
 break
@@ -53,7 +55,13 @@ break
 "Start Command Module")
 cd ICW_Wallet
 ./cmd
+echo -e 'To exit Command module please press CTRL + A+D\e[0m'
 
+break
+;;
+"Currently Running Command Module")
+screen -r icw
+echo -e 'To exit Command module please press CTRL + A+D\e[0m'
 
 break
 ;;
