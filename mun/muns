@@ -44,10 +44,16 @@ echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
 #UPDATE APT
 sudo apt update && sudo apt upgrade -y && sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
 
-echo -e "        \e[1m\e[32m2. Installing GO--> \e[0m" && sleep 1
-#INSTALL GO Ver 1.18
-wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash -s -- --version 1.18
-source ~/.profile
+echo -e "        \e[1m\e[32m2. Installing GO Ver 1.18.3--> \e[0m" && sleep 1
+#INSTALL GO Ver 1.18.3
+cd $HOME && version="1.18.3" && \
+wget "https://golang.org/dl/go$version.linux-amd64.tar.gz" && \
+sudo rm -rf /usr/local/go && \
+sudo tar -C /usr/local -xzf "go$version.linux-amd64.tar.gz" && \
+rm "go$version.linux-amd64.tar.gz" && \
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && \
+source $HOME/.bash_profile && \
+go version
 
 echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
 #INSTALL
@@ -56,6 +62,7 @@ cd mun && \
 sudo rm -rf ~/.mun && \
 go mod tidy && \
 make install && \
+mund version
 
 mund init $NODENAME --chain-id $MUN_CHAIN_ID
 
