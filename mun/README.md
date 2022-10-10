@@ -36,7 +36,7 @@ sudo ufw enable
 
 ## Auto Install Script
 ```
-wget -O mun.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/mun/mun.sh && chmod +x mun.sh && ./mun.sh
+wget -O mun https://raw.githubusercontent.com/elangrr/testnet_guide/main/mun/mun && chmod +x mun && ./mun
 ```
 
 ## Manual Installation
