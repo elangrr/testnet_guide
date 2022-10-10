@@ -123,7 +123,7 @@ echo "_|-_|-_|-_|-_|-_|-_|"
 read WALLET
 echo export WALLET=${WALLET} >> $HOME/.bash_profile
 source ~/.bash_profile
-mund keys add $Wallet --keyring-backend test
+mund keys add $WALLET --keyring-backend test
 MUN_WALLET_ADDRESS=$(mund keys show $WALLET -a)
 MUN_VALOPER_ADDRESS=$(mund keys show $WALLET --bech val -a)
 echo 'export MUN_WALLET_ADDRESS='${MUN_WALLET_ADDRESS} >> $HOME/.bash_profile
