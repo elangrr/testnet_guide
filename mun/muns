@@ -121,7 +121,8 @@ echo "_|-_|-_|-_|-_|-_|-_|"
 echo -e "      \e[1m\e[35m Your WalletName:\e[0m"
 echo "_|-_|-_|-_|-_|-_|-_|"
 read WALLET
-echo export WALLET=${WALLET} >> $HOME/.bash_profile
+if [ ! $WALLET ]; then
+	echo "export WALLET=wallet" >> $HOME/.bash_profile
 source ~/.bash_profile
 mund keys add $WALLET --keyring-backend test
 MUN_WALLET_ADDRESS=$(mund keys show $WALLET -a)
