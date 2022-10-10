@@ -54,8 +54,8 @@ echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m"
 cd $HOME && git clone https://github.com/munblockchain/mun && \
 cd mun && \
 sudo rm -rf ~/.mun && \
-go mod tidy \
-make install
+go mod tidy && \
+make install && \
 
 mund init $NODENAME --chain-id $MUN_CHAIN_ID
 
