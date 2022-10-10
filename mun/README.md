@@ -34,6 +34,12 @@ sudo ufw enable
 ```
 `NOTE : AZURE USER OPEN PORT IN THEIR PANEL !!!`
 
+## Auto Install Script
+```
+wget -O mun.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/mun/mun.sh && chmod +x mun.sh && ./mun.sh
+```
+
+
 ### Set Vars
 ```
 NODENAME=<YOUR_MONIKER>
