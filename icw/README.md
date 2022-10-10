@@ -94,8 +94,8 @@ import <private-key>
 ```
 Example : `import 6d6e510702da8aed3d2a5dc5a3140736b4b392ad44415xxxxxxxxxxxxxxx`
 
-Please enter the password (password is between 8 and 20 inclusive of numbers and
-letters)
+Please enter the password `ICW123456`
+
 ### Import your package account
 Import your package account private key (NOT ON-CHAIN ACCOUNT !!)
 ```
@@ -103,7 +103,6 @@ import <private-key>
 ```
 Example : `import 5f190d5cd251093539fa3229db4663b04c1a7b236d9874c59xxxxxxxxxxxx`
 
-Please enter the password (password is between 8 and 20 inclusive of numbers and
-letters)
+Please enter the password `ICW123456`
 
 
