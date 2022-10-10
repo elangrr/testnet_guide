@@ -1,0 +1,181 @@
+#!/bin/bash
+
+while true
+do
+
+echo -e "\033[0;35m"
+echo " ________      _________                  _________       _________";
+echo " ____  _/____________  /________________________  /____   ______  /_";
+echo "  __  / __  __ \  __  /_  __ \_  __ \  __ \  __  /_  _ \  _  __  /_  _ \_ | / /";
+echo " __/ /  _  / / / /_/ / / /_/ /  / / / /_/ / /_/ / /  __/__/ /_/ / /  __/_ |/ /";
+echo " /___/  /_/ /_/\__,_/  \____//_/ /_/\____/\__,_/  \___/_(_)__,_/  \___/_____/ ";
+echo "______________________________________________________________________________";
+echo " ==============================================================================";
+echo -e '\e[36mWebsite:\e[39m' https://indonode.dev/
+echo -e '\e[36mGithub:\e[39m'  https://github.com/elangrr/
+echo -e "\e[0m"
+# Menu
+
+PS3='Select an action: '
+options=(
+"Install Node"
+"Create wallet"
+"Check node logs"
+"Synchronization via StateSync"
+"Delete Node"
+"Exit")
+select opt in "${options[@]}"
+do
+case $opt in
+
+"Install Node")
+echo "====================="
+echo -e "\e[1m\e[35m		Lets's begin\e[0m"
+echo "====================="
+echo -e "\e[1m\e[32m	Enter your NODENAME:\e[0m"
+echo "_|-_|-_|-_|-_|-_|-_|"
+read NODENAME
+echo "_|-_|-_|-_|-_|-_|-_|"
+echo export NODENAME=${NODENAME} >> $HOME/.bash_profile
+echo export MUN_CHAIN_ID="testmun" >> $HOME/.bash_profile
+source ~/.bash_profile
+
+echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
+#UPDATE APT
+sudo apt update && sudo apt upgrade -y && sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
+
+echo -e "        \e[1m\e[32m2. Installing GO--> \e[0m" && sleep 1
+#INSTALL GO Ver 1.18
+wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash -s -- --version 1.18
+source ~/.profile
+
+echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
+#INSTALL
+cd $HOME && git clone https://github.com/munblockchain/mun && \
+cd mun && \
+sudo rm -rf ~/.mun && \
+go mod tidy \
+make install
+
+mund init $NODENAME --chain-id $MUN_CHAIN_ID
+
+curl --tlsv1 https://node1.mun.money/genesis? | jq ".result.genesis" > ~/.mun/config/genesis.json
+
+echo -e "                     \e[1m\e[32m4. Node optimization and improvement--> \e[0m" && sleep 1
+
+SEEDS="9240277fca3bfa0c3b94efa60215ca10cf54f249@45.76.68.116:26656"
+sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.mun/config/config.toml
+
+sed -i 's/stake/utmun/g' ~/.mun/config/genesis.json
+
+# pruning and indexer
+pruning="custom" && \
+pruning_keep_recent="100" && \
+pruning_keep_every="0" && \
+pruning_interval="10" && \
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.mun/config/app.toml && \
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.mun/config/app.toml && \
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.mun/config/app.toml && \
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.mun/config/app.toml
+indexer="null" && \
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.mun/config/config.toml
+
+
+sudo tee /etc/systemd/system/mund.service > /dev/null <<EOF
+[Unit]
+Description=mun
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which mund) start --home $HOME/.mun --pruning="nothing" --rpc.laddr "tcp://0.0.0.0:26657"
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# start service
+sudo systemctl daemon-reload
+sudo systemctl enable mund
+sudo systemctl restart mund
+
+echo '=============== SETUP FINISHED ==================='
+echo -e 'Congratulations:        \e[1m\e[32mSUCCESSFUL NODE INSTALLATION\e[0m'
+echo -e 'To check logs:        \e[1m\e[33msudo journalctl -u mund -f -o cat\e[0m'
+echo -e "To check sync status: \e[1m\e[35mcurl -s localhost:26657/status\e[0m"
+
+break
+;;
+"Create wallet")
+echo "_|-_|-_|-_|-_|-_|-_|"
+echo -e "      \e[1m\e[35m Your WalletName:\e[0m"
+echo "_|-_|-_|-_|-_|-_|-_|"
+read WALLET
+echo export WALLET=${WALLET} >> $HOME/.bash_profile
+source ~/.bash_profile
+mund keys add $Wallet --keyring-backend test
+MUN_WALLET_ADDRESS=$(mund keys show $WALLET -a)
+MUN_VALOPER_ADDRESS=$(mund keys show $WALLET --bech val -a)
+echo 'export MUN_WALLET_ADDRESS='${MUN_WALLET_ADDRESS} >> $HOME/.bash_profile
+echo 'export MUN_VALOPER_ADDRESS='${MUN_VALOPER_ADDRESS} >> $HOME/.bash_profile
+source $HOME/.bash_profile
+echo -e "      \e[1m\e[32mPLEASE SAVE YOUR MNEMONIC!!!\e[0m'"
+
+break
+;;
+"Synchronization via StateSync")
+echo -e "      \e[1m\e[32m Synchronizing via State-Sync\e[0m"
+sudo systemctl stop mund
+
+cp $HOME/.mun/data/priv_validator_state.json $HOME/.mun/priv_validator_state.json.backup
+mund tendermint unsafe-reset-all --home $HOME/.mun --keep-addr-book
+
+RPC="http://bimasaktimunrpc.westeurope.cloudapp.azure.com:26657"
+
+LATEST_HEIGHT=$(curl -s $RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+TRUST_HASH=$(curl -s "$RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
+echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
+
+peers="e1733d60e1bbbee3241f62c10257555efb8398a5@bimasaktimunrpc.westeurope.cloudapp.azure.com:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.mun/config/config.toml
+
+sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$RPC,$RPC\"| ; \
+s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
+s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|" $HOME/.mun/config/config.toml
+
+mv $HOME/.mun/priv_validator_state.json.backup $HOME/.mun/data/priv_validator_state.json
+
+sudo systemctl restart mund
+sudo journalctl -u mund -f --no-hostname -o cat
+
+break
+;;
+"Check node logs")
+sudo journalctl -u mund -f -o cat
+
+
+break
+;;
+"Delete Node")
+sudo systemctl stop mund
+sudo systemctl disable mund
+sudo rm /etc/systemd/system/mun* -rf
+sudo rm $(which mund) -rf
+sudo rm $HOME/.mun* -rf
+sudo rm $HOME/mun -rf
+sed -i '/MUN_/d' ~/.bash_profile
+
+break
+;;
+"Exit")
+exit
+esac
+done
+done
