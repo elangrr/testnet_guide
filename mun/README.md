@@ -39,7 +39,7 @@ sudo ufw enable
 wget -O mun.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/mun/mun.sh && chmod +x mun.sh && ./mun.sh
 ```
 
-
+## Manual Installation
 ### Set Vars
 ```
 NODENAME=<YOUR_MONIKER>
