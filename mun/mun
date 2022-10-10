@@ -33,7 +33,7 @@ echo "====================="
 echo -e "\e[1m\e[35m		Lets's begin\e[0m"
 echo "====================="
 echo -e "\e[1m\e[32m	Enter your NODENAME:\e[0m"
-echo "_|-_|-_|-_|-_|-_|-_|"
+echo "node name has to be like this your-node-name"
 read NODENAME
 echo "_|-_|-_|-_|-_|-_|-_|"
 echo export NODENAME=${NODENAME} >> $HOME/.bash_profile
