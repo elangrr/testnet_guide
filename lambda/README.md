@@ -77,7 +77,7 @@ Replace `<WALLET>` with whatever wallet name you like
 ### Set Minimum gas price and timeout commit
 ```
 sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.01ulamb\"/;" $HOME/.lambdavm/config/app.toml
-sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"2s\"/" $HOME/.kujira/config/config.toml
+sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"2s\"/" $HOME/.lambdavm/config/config.toml
 ```
 
 ### Pruning (OPTIONAL)
