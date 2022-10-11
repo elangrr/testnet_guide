@@ -131,7 +131,7 @@ EOF
 sudo systemctl daemon-reload && sudo systemctl enable lambdavm && sudo systemctl restart lambdavm && sudo journalctl -u lambdavm -f -o cat
 ```
 
-### State-Syncc (OPTIONAL)
+### State-Sync (OPTIONAL)
 To Sync your node in minutes
 ```
 SNAP_RPC="https://rpc.lambda.nodestake.top:443"
@@ -177,7 +177,7 @@ lambdavm tx staking create-validator \
   --details="" \
   --broadcast-mode block -y
 ```
-Replace `<Moniker>` With your moniker and replay `<wallet>` with your wallet name
+Replace `<Moniker>` With your moniker and replace `<wallet>` with your wallet name
 
 ### Explorer
 - Official Explorer : https://app.lambda.im/staking
