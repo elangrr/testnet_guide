@@ -39,6 +39,11 @@ sudo ufw allow 9151
 ```
 `NOTE : AZURE USER OPEN PORT IN THEIR PANEL !!!`
 
+Check if your port is open in [Yougetsignal](https://www.yougetsignal.com/tools/open-ports/)
+
+If your port still closed try to use guide how to open port [Open Port Guide](https://github.com/elangrr/testnet_guide/blob/main/nulink/check_port.md)
+
+
 ## Auto Install
 Run the following command to install in minutes
 ```
