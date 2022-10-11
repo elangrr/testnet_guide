@@ -171,13 +171,13 @@ lambdavm tx staking create-validator \
   --min-self-delegation="1000000" \
   --gas="300000" \
   --gas-prices="0.025ulamb" \
-  --from=wallet \
+  --from=<wallet> \
   --identity="" \
   --website="" \
   --details="" \
   --broadcast-mode block -y
 ```
-Replace `<Moniker>` With your moniker
+Replace `<Moniker>` With your moniker and replay `<wallet>` with your wallet name
 
 ### Explorer
 - Official Explorer : https://app.lambda.im/staking
