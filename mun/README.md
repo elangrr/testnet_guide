@@ -50,9 +50,6 @@ Example : `indo-node-dev`
 Save and import variable to system
 ```
 echo "export NODENAME=$NODENAME" >> $HOME/.bash_profile
-if [ ! $WALLET ]; then
-	echo "export WALLET=wallet" >> $HOME/.bash_profile
-fi
 echo "export MUN_CHAIN_ID=testmun" >> $HOME/.bash_profile
 source $HOME/.bash_profile
 ```
@@ -73,8 +70,6 @@ source ~/.profile
 ```
 git clone https://github.com/munblockchain/mun
 cd mun
-sudo rm -rf ~/.mun
-go mod tidy
 make install
 ```
 
@@ -132,30 +127,17 @@ sudo systemctl restart mund && sudo journalctl -u mund -f -o cat
 ### Create wallet
 to create new wallet : 
 ```
-mund keys add $WALLET
+mund keys add <wallet>
 ```
 
 to recover existing wallet (OPTIONAL!!)
 ```
-mund keys add $WALLET --recover
+mund keys add <wallet> --recover
 ```
 
 to get current list of wallet
 ```
 mund keys list
-```
-
-### Save wallet info
-```
-MUN_WALLET_ADDRESS=$(mund keys show $WALLET -a)
-```
-```
-MUN_VALOPER_ADDRESS=$(mund keys show $WALLET --bech val -a)
-```
-```
-echo 'export MUN_WALLET_ADDRESS='${MUN_WALLET_ADDRESS} >> $HOME/.bash_profile
-echo 'export MUN_VALOPER_ADDRESS='${MUN_VALOPER_ADDRESS} >> $HOME/.bash_profile
-source $HOME/.bash_profile
 ```
 
 ## Tips
@@ -168,7 +150,7 @@ Or visit https://blockexplorer.mun.money
 to become a validator by staking 50K TMUN
 ```
 mund tx staking create-validator \
-	--from $WALLET \
+	--from <wallet> \
 	--moniker $NODENAME \
 	--pubkey $(mund tendermint show-validator) \
 	--chain-id $MUN_CHAIN_ID \
@@ -264,48 +246,48 @@ mund keys list
 
 Recover wallet
 ```
-mund keys add $WALLET --recover
+mund keys add <wallet> --recover
 ```
 
 Delete wallet
 ```
-mund keys delete $WALLET
+mund keys delete <wallet>
 ```
 
 Get wallet balance
 ```
-mund query bank balances $MUN_WALLET_ADDRESS
+mund query bank balances <mun wallet address>
 ```
 
 Transfer funds
 ```
-mund tx bank send $MUN_WALLET_ADDRESS <TO_MUN_WALLET_ADDRESS> 10000000utmun
+mund tx bank send <from mun wallet address> <TO_MUN_WALLET_ADDRESS> 10000000utmun
 ```
 
 ### Voting
 ```
-mund tx gov vote 1 yes --from $WALLET --chain-id=$MUN_CHAIN_ID
+mund tx gov vote 1 yes --from <wallet> --chain-id=$MUN_CHAIN_ID
 ```
 
 ### Staking, Delegation and Rewards
 Delegate stake
 ```
-mund tx staking delegate $MUN_VALOPER_ADDRESS 10000000utmun --from=$WALLET --chain-id=$MUN_CHAIN_ID --gas=auto
+mund tx staking delegate <mun valoper addr> 10000000utmun --from=<wallet> --chain-id=$MUN_CHAIN_ID --gas=auto
 ```
 
 Redelegate stake from validator to another validator
 ```
-mund tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000utmun --from=$WALLET --chain-id=$MUN_CHAIN_ID --gas=auto
+mund tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000utmun --from=<wallet> --chain-id=$MUN_CHAIN_ID --gas=auto
 ```
 
 Withdraw all rewards
 ```
-mund tx distribution withdraw-all-rewards --from=$WALLET --chain-id=$MUN_CHAIN_ID --gas=auto
+mund tx distribution withdraw-all-rewards --from=<wallet> --chain-id=$MUN_CHAIN_ID --gas=auto
 ```
 
 Withdraw rewards with commision
 ```
-mund tx distribution withdraw-rewards $MUN_VALOPER_ADDRESS --from=$WALLET --commission --chain-id=$MUN_CHAIN_ID
+mund tx distribution withdraw-rewards <mun valoper addr> --from=<wallet> --commission --chain-id=$MUN_CHAIN_ID
 ```
 
 ### Validator management
@@ -317,14 +299,14 @@ mund tx staking edit-validator \
   --website="<your_website>" \
   --details="<your_validator_description>" \
   --chain-id=$MUN_CHAIN_ID \
-  --from=$WALLET
+  --from=<wallet>
 ```
 
 Unjail validator
 ```
 mund tx slashing unjail \
   --broadcast-mode=block \
-  --from=$WALLET \
+  --from=<wallet> \
   --chain-id=$MUN_CHAIN_ID \
   --gas=auto
 ```
