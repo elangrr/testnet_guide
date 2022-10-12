@@ -31,6 +31,8 @@
 - 30GB SSD
 
 # Pre-Installation !!!
+WARNING!! In order to run Nulink you need static IPV4 , currently nulink does not support IPV6
+
 First run as Super user and open port
 ```
 sudo su
