@@ -33,13 +33,13 @@
 - 8-core CPU 
 - 16G memory 
 - 200G available hard disk space
--10 M bandwidth.
+- 10 M bandwidth.
 
 ## Node Install Tutorial
 
 ### Depencies 
 ```
-sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk
+sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
 ```
 
 ### Download Wallet
@@ -105,4 +105,24 @@ Example : `import 5f190d5cd251093539fa3229db4663b04c1a7b236d9874c59xxxxxxxxxxxx`
 
 Please enter the password `ICW123456`
 
+
+### Create Agent / Validator
+
+To create your agent run the following command in CMD Module
+```
+createagent <on-chain address> <package address> <commision rate> <deposit>
+```
+`EXAMPLE`
+```
+createagent ICWc6Hgbnyu2MnnwGhxxxxxxxxxxxxx ICWc6HgZE1s1mqbdgVTvT5oX4Jxxxxxxxxxxx 10 20000
+```
+Then enter password `ICW123456`
+
+### Reducing memory usage if you have less than 8GB RAM
+`Available memory more than 8G, do not need to perform the following actions`
+
+Change the `xmsMem` parameter from 8000000 to 4000000
+```
+
+```
 
