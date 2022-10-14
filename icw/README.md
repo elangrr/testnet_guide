@@ -109,6 +109,8 @@ Please enter the password `ICW123456`
 ### Create Agent / Validator
 
 To create your agent run the following command in CMD Module
+
+PLEASE MAKE SURE YOUR NODE IS SYNCED! CHECK BY RUNNING `network info` command in CMD Module
 ```
 createagent <on-chain address> <package address> <commision rate> <deposit>
 ```
