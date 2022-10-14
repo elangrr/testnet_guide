@@ -112,19 +112,33 @@ To create your agent run the following command in CMD Module
 
 PLEASE MAKE SURE YOUR NODE IS SYNCED! CHECK BY RUNNING `network info` command in CMD Module
 ```
-createagent <on-chain address> <package address> <commision rate> <deposit>
+createagent <agent address> <package address> <commision rate> <deposit>
 ```
 `EXAMPLE`
 ```
 createagent ICWc6Hgbnyu2MnnwGhxxxxxxxxxxxxx ICWc6HgZE1s1mqbdgVTvT5oX4Jxxxxxxxxxxx 10 20000
 ```
+- Agent address (chains) : users
+- Package address: provided by the user
+- Commission rate :10-100 adjustable.
+- Deposit: 20,000 ICW
+
 Then enter password `ICW123456`
+
+Then you will get txhash of successfull transaction
+![image](https://user-images.githubusercontent.com/34649601/195807606-f0db0858-3191-4b59-8b97-8db41b226e2d.png)
 
 ### Reducing memory usage if you have less than 8GB RAM
 `Available memory more than 8G, do not need to perform the following actions`
 
-Change the `xmsMem` parameter from 8000000 to 4000000
+Change the `xmsMem` parameter from `8000000` to `4000000`
+```
+cd ICW_Wallet/
+sudo nano start
 ```
 
-```
+Then change `xmsMem` parameter
+
+![image](https://user-images.githubusercontent.com/34649601/195807944-100a6f61-df3b-4887-979f-f28d693b995e.png)
+ 
 
