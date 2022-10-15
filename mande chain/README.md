@@ -15,6 +15,9 @@
 ### [Official Document](https://github.com/mande-labs/testnet-1)
 ### [Mande Chain Official Discord](https://discord.gg/Q43H94fG7X)
 
+# Explorer
+[STAVR Explorer](https://explorer.stavr.tech/mande-chain/staking)
+
 ## Minimum Requirements 
 - 2 or more physical CPU cores
 - At least 100GB of SSD disk storage
