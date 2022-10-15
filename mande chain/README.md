@@ -7,12 +7,13 @@
 </p>
 
 <p align="center">
- <img height="250" height="auto" src="https://o.remove.bg/downloads/3d162932-3af8-4175-a95b-7d223186d22b/195984832-4b59ffcb-4253-40ee-9168-edc7bfa7425f-removebg-preview.png">
-</p>
+ <img height="250" height="auto" src="https://user-images.githubusercontent.com/34649601/195998836-4f64c191-0a50-4819-a623-a2e9fb84901b.png">
+
+
 
 # Official Links
 ### [Official Document](https://github.com/mande-labs/testnet-1)
-### [Manda Chain Official Discord](https://discord.gg/Q43H94fG7X)
+### [Mande Chain Official Discord](https://discord.gg/Q43H94fG7X)
 
 ## Minimum Requirements 
 - 2 or more physical CPU cores
