@@ -158,6 +158,11 @@ mande-chaind tendermint unsafe-reset-all --home /root/.mande-chain --keep-addr-b
 systemctl restart mande-chaind && journalctl -u mande-chaind -f -o cat
 ```
 
+### Ask for faucet
+```
+curl -d '{"address":"<MANDE ADDRESS>"}' -H 'Content-Type: application/json' http://35.224.207.121:8080/request
+```
+Change `<MANDE ADDRESS>` to your address
 
 ### Create validator
 After your node is synced, create validator
