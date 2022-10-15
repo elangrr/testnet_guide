@@ -48,8 +48,8 @@ go version
 ```
 cd $HOME
 curl -OL https://github.com/mande-labs/testnet-1/raw/main/mande-chaind
-mv mande-chaind /usr/local/bin/
-chmod 744 /usr/local/bin
+mv mande-chaind /$HOME/go/bin/
+chmod 744 /$HOME/go/bin/mande-chaind
 ```
 
 ### Init 
