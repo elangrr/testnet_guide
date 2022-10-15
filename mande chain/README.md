@@ -34,7 +34,7 @@ sudo apt install curl tar wget tmux htop net-tools clang pkg-config libssl-dev j
 
 ### Install GO
 ```
-ver="1.19.2" && \
+ver="1.19" && \
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
 sudo rm -rf /usr/local/go && \
 sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
