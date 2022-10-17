@@ -47,7 +47,7 @@ sudo chown -R $(id -u):$(id -g) /var/lib/bifrost-data
 
 ### Run docker container
 ```
-docker run -d -p 30333:30333 -p 9933:9933 -v "/var/lib/bifrost-data:/data" --name "NODENAME" thebifrost/bifrost-node:latest \ 
+docker run -d -p 30333:30333 -p 9933:9933 -v "/var/lib/bifrost-data:/data" --name bifrost-validator thebifrost/bifrost-node:latest \ 
 --base-path /data \ --chain /specs/bifrost-testnet.json \ 
 --port 30333 \ 
 --validator \ 
