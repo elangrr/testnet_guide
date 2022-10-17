@@ -56,7 +56,7 @@ docker run -d -p 30333:30333 -p 9933:9933 -v "/var/lib/bifrost-data:/data" --nam
 --telemetry-url "wss://telemetry-connector.testnet.thebifrost.io/submit 0" \ 
 --name "CONTROLLER ADDRESS"
 ```
-Change `CONTROLLER ADDRESS` To your controller address or your desired node name
+Change `CONTROLLER ADDRESS` To your controller address
 
 Check the logs 
 ```
