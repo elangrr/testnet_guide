@@ -11,7 +11,7 @@
 </p>
 
 # Official Links
-### [Bifrost Official Website](https://www.lambda.im/)
+### [Bifrost Official Website](https://thebifrost.io/)
 ### [Bifrost Discord](https://discord.gg/HpK7kGzXBh)
 
 ## Minimum Requirements 
