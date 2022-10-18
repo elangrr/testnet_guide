@@ -26,7 +26,7 @@
 ```
 cd $HOME
 sudo apt update && sudo apt upgrade -y
-sudo apt install curl build-essential git wget npm nodejs jq make gcc tmux -y && apt purge docker docker-engine docker.io containerd docker-compose -y
+sudo apt install curl build-essential git wget npm nodejs jq make gcc tmux -y
 ```
 
 ### Create directory
