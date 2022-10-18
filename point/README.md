@@ -35,6 +35,17 @@ wget -O point.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/po
 source $HOME/.bash_profile
 ```
 
+### Update Binary
+```
+cd $HOME
+rm -rf point-chain
+git clone https://github.com/pointnetwork/point-chain && cd point-chain
+git fetch --all
+git checkout tags/v0.0.3
+make install
+sudo systemctl restart pointd && sudo journalctl -u pointd -f -o cat
+```
+
 ### Check info Sync
 Note : You have to synced to the lastest block , check the sync status with this command
 ```
