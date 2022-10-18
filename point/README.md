@@ -35,7 +35,8 @@ wget -O point.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/po
 source $HOME/.bash_profile
 ```
 
-### Update Binary
+### Update Binary (OPTIONAL)
+Check version by typing `pointd version` if it shows version lower than v.0.0.3 then you need to update or else dont.
 ```
 cd $HOME
 rm -rf point-chain
