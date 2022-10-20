@@ -71,6 +71,9 @@ pointd init $NODENAME --chain-id $POINT_CHAIN_ID
 wget -O $HOME/.pointd/config/genesis.json wget "https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/genesis.json"
 wget -O $HOME/.pointd/config/config.toml wget "https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/config.toml"
 
+# update peers
+PEERS=`curl -s https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/peers.txt`
+sed -i.bak -e "s/^persistent_peers *=.*/persistent	_peers = \"$PEERS\"/" $HOME/.pointd/config/config.toml
 
 #config pruning
 indexer="null"
