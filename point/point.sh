@@ -56,7 +56,7 @@ echo -e "\e[1m\e[32m3. Downloading and building binaries... \e[0m" && sleep 1
 cd $HOME
 git clone https://github.com/pointnetwork/point-chain && cd point-chain
 git fetch --all
-git checkout tags/v0.0.3
+git checkout tags/v0.0.4
 make install
 
 #config
