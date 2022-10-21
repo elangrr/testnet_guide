@@ -51,6 +51,10 @@ Run the following command to install in minutes
 ```
 wget -O nulink.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/nulink/nulink.sh && chmod +x nulink.sh && ./nulink.sh
 ```
+
+## Update your node (OPTIONAL)
+[UPDATE NODE](https://github.com/elangrr/testnet_guide/blob/main/nulink/update.md) 
+
 ### Post-Installation (Save your KEY!!)
 After running auto Installation you will need to put `Password` Twice.
 You will get Information about your key dont forget to SAVE IT ! Its only show once.
