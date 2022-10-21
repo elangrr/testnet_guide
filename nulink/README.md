@@ -52,7 +52,7 @@ Run the following command to install in minutes
 wget -O nulink.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/nulink/nulink.sh && chmod +x nulink.sh && ./nulink.sh
 ```
 
-## Update your node (OPTIONAL)
+## Update your node (OPTIONAL) if your node is older than 20/10/2022 you have to update !! 
 [UPDATE NODE](https://github.com/elangrr/testnet_guide/blob/main/nulink/update.md) 
 
 ### Post-Installation (Save your KEY!!)
