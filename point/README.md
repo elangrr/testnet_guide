@@ -42,7 +42,7 @@ cd $HOME
 rm -rf point-chain
 git clone https://github.com/pointnetwork/point-chain && cd point-chain
 git fetch --all
-git checkout tags/v0.0.3
+git checkout tags/v0.0.4
 make install
 sudo systemctl restart pointd && sudo journalctl -u pointd -f -o cat
 ```
