@@ -183,17 +183,19 @@ To check your nois balance
 noisd query bank balances <nois wallet addr>
 ```
 
+Create validator with 1.99 nois
 ```
 noisd tx staking create-validator \
-  --amount 2000000unois \
-  --from <wallet> \
+  --amount 1900000unois \
+  --from wallet \
   --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
   --commission-rate "0.07" \
   --min-self-delegation "1" \
   --pubkey  $(noisd tendermint show-validator) \
-  --moniker <moniker> \
-  --chain-id nois-testnet-003
+  --moniker Indonode.dev \
+  --chain-id nois-testnet-003 \
+  --fees 10000unois
 ```
 Change `<wallet>` and `<moniker>` 
 
