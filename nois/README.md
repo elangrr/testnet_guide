@@ -185,7 +185,7 @@ noisd query bank balances <nois wallet addr>
 
 ```
 noisd tx staking create-validator \
-  --amount 100000000unois \
+  --amount 2000000unois \
   --from <wallet> \
   --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
