@@ -47,7 +47,7 @@ sudo chown -R $(id -u):$(id -g) /var/lib/bifrost-data
 
 ### Run docker container
 ```
-docker run -d -p 30333:30333 -p 9933:9933 -v "/var/lib/bifrost-data:/data" --name bifrost-validator thebifrost/bifrost-node:latest \ 
+docker run -d -p 30333:30333 -p 9933:9933 -v "/var/lib/bifrost-data:/data" --name bifrost-validator thebifrost/bifrost-node:v1.0.1 \ 
 --base-path /data \ 
 --chain /specs/bifrost-testnet.json \ 
 --port 30333 \ 
@@ -63,6 +63,27 @@ Check the logs
 ```
 docker logs -f bifrost-validator
 ```
+
+### Update Node (OPTIONAL) Running before 23/10/2022 must update
+```
+docker stop bifrost-validator
+docker rm bifrost-validator
+```
+```
+docker pull thebifrost/bifrost-node:v1.0.1
+```
+```
+docker run -d --network host -v "/var/lib/bifrost-data:/data" --name bifrost-validator thebifrost/bifrost-node:v1.0.1 \
+  --base-path /data \
+  --chain /specs/bifrost-testnet.json \
+  --port 30333 \
+  --validator \
+  --state-cache-size 0 \
+  --runtime-cache-size 64 \
+  --name <CONTROLLER ADDRESS>
+```
+
+Change `<CONTROLLER ADDRESS>` 
 
 After node is synced (`Target` value are the same as `Best` value) and node start importing blocks
 <p align="center">
