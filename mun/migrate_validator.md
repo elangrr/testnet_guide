@@ -66,7 +66,14 @@ sudo systemctl start mund
 ### 9. Make sure your validator is not jailed
 #### To unjail your validator
 ```
-mund tx slashing unjail --chain-id $MUN_CHAIN_ID --from $WALLET --gas=auto -y
+mund tx slashing unjail \
+  --broadcast-mode=block \
+  --from=<wallet> \
+  --chain-id=testmun \
+  --gas-prices 0.1utmun \
+  --gas-adjustment 1.5 \
+  --gas auto \
+  -y
 ```
 
 ### 10. After you ensure your validator is producing blocks and is healthy you can shut down old validator server
