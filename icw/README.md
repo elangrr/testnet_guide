@@ -44,7 +44,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt install wget openjdk-8-jdk -y
 
 ### Download Wallet
 ```
-wget http://8.219.130.70:8002/download/ICW_Wallet.tar
+wget https://wallet.icwchain.com/ICW_Wallet.tar
 ```
 
 ### Decompress it
@@ -62,6 +62,7 @@ a sucessfull wallet would look like this :
 
  <img height="400" height="auto" src="https://user-images.githubusercontent.com/34649601/194700746-57d64f33-8fc0-414d-9dad-fe83b42828b7.png">
 </p>
+
 
 Run CMD by typing :
 ```
@@ -128,7 +129,7 @@ Then enter password `ICW123456`
 Then you will get txhash of successfull transaction
 ![image](https://user-images.githubusercontent.com/34649601/195807606-f0db0858-3191-4b59-8b97-8db41b226e2d.png)
 
-### Reducing memory usage if you have less than 8GB RAM
+### Reducing memory usage if you have less than 8GB RAM (OPTIONAL)
 `Available memory more than 8G, do not need to perform the following actions`
 
 Change the `xmsMem` parameter from `8000000` to `4000000`
@@ -142,3 +143,9 @@ Then change `xmsMem` parameter
 ![image](https://user-images.githubusercontent.com/34649601/195807944-100a6f61-df3b-4887-979f-f28d693b995e.png)
  
 
+### Update ICW
+```
+cd $HOME
+wget https://wallet.icwchain.com/backup.sh
+sh backup.sh
+```
