@@ -168,7 +168,22 @@ mund tx staking create-validator \
 ### State-Sync (OPTIONAL)
 Sync your node in a minute
 ```
+SNAP_RPC="http://213.136.86.80:26657"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
+sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
+s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.mun/config/config.toml
+peers="c59296a829cee441911bdab0160faff235636a36@213.136.86.80:26656"
+sed -i.bak -e  "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.mun/config/config.toml
+
+mund tendermint unsafe-reset-all --home $HOME/.mun --keep-addr-book
+
+sudo systemctl restart mund
+sudo journalctl -u mund -f --no-hostname -o cat
 ```
 
 ## Usefull commands
