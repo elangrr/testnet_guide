@@ -86,6 +86,22 @@ Synchronization is complete when localBestHeight equals netBestHeight
 `Note: The speed of synchronizing the height of the block is related to the network speed
 of the machine.`
 
+### Update ICW to latest version
+```
+cd $HOME
+wget https://wallet.icwchain.com/backup.sh
+sh backup.sh
+```
+
+Check ur sync status
+```
+cd ICW_Wallet/
+./cmd
+```
+```
+network info
+```
+
 ### Import Your on-chain account 
 Once your node is Synced, import your on-chain private key
 
@@ -129,21 +145,6 @@ Then enter password `ICW123456`
 Then you will get txhash of successfull transaction
 ![image](https://user-images.githubusercontent.com/34649601/195807606-f0db0858-3191-4b59-8b97-8db41b226e2d.png)
 
-### Update ICW
-```
-cd $HOME
-wget https://wallet.icwchain.com/backup.sh
-sh backup.sh
-```
-
-Check ur sync status
-```
-cd ICW_Wallet/
-./cmd
-```
-```
-network info
-```
 
 ### Reducing memory usage if you have less than 8GB RAM (OPTIONAL)
 `Available memory more than 8G, do not need to perform the following actions`
