@@ -89,7 +89,7 @@ Change `<wallet address>` To your defund wallet address
 
 ### Create Gentx
 ```
-defundd gentx $WALLET 90000000ufetf \
+defundd gentx <wallet> 90000000ufetf \
 --chain-id defund-private-2 \
 --moniker=<moniker> \
 --commission-max-change-rate=0.01 \
@@ -100,7 +100,7 @@ defundd gentx $WALLET 90000000ufetf \
 --website=""
 ```
 
-Change `<moniker>`
+Change `<moniker>` and `<wallet>`
 
 ### Backup 
 
