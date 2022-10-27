@@ -109,7 +109,7 @@ Create agent account and package account at [ICW Wallet](https://wallet.icwchain
 You need 20k ICW in Agent account to create agent
 
 
-### Import Your on-chain account 
+### Import Your agent account 
 Once your node is Synced, import your on-chain private key
 
 In CMD-Module type 
