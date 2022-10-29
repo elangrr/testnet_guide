@@ -148,8 +148,8 @@ sudo systemctl restart mande-chaind && sudo journalctl -u mande-chaind -f -o cat
 ### State-Sync (OPTIONAL)
 Sync your node in minutes
 ```
-SNAP_RPC=http://38.242.199.93:24657
-peers="a3e3e20528604b26b792055be84e3fd4de70533b@38.242.199.93:24656"
+SNAP_RPC=http://209.182.239.169:28657
+peers="bd9929b9a2e8b5ad1581e4b01f85457e0d01cba3@209.182.239.169:28656"
 sed -i.bak -e  "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.mande-chain/config/config.toml
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 500)); \
