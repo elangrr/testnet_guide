@@ -26,7 +26,7 @@
 
 # Auto Install
 ```
-wget -O mand https://raw.githubusercontent.com/obajay/nodes-Guides/main/mandda%20Network/mand && chmod +x mand && ./mand
+wget -O mand https://raw.githubusercontent.com/elangrr/testnet_guide/main/mande%20chain/mand && chmod +x mand && ./mand
 ```
 
 # Manual Install Node Guide
