@@ -24,7 +24,12 @@
 - At least 4GB of memory (RAM)
 - At least 100mbps network bandwidth
 
-# Install Node Guide
+# Auto Install
+```
+wget -O mand https://raw.githubusercontent.com/obajay/nodes-Guides/main/mandda%20Network/mand && chmod +x mand && ./mand
+```
+
+# Manual Install Node Guide
 
 ### Update Packages and Depencies
 ```
