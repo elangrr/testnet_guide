@@ -67,23 +67,6 @@ mande-chaind init <moniker> --chain-id mande-testnet-1
 ```
 Change `<moniker>` to your moniker
 
-### Create wallet
-To create new wallet use 
-```
-mande-chaind keys add <wallet>
-```
-Change `<wallet>` to your wallet name
-
-To recover existing keys use 
-```
-mande-chaind keys add <wallet> --recover
-```
-Change `<wallet>` to your wallet name
-
-To see current keys 
-```
-mande-chaind keys list
-```
 
 ### Download genesis file
 ```
@@ -143,6 +126,24 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable mande-chaind
 sudo systemctl restart mande-chaind && sudo journalctl -u mande-chaind -f -o cat
+```
+
+### Create wallet
+To create new wallet use 
+```
+mande-chaind keys add <wallet>
+```
+Change `<wallet>` to your wallet name
+
+To recover existing keys use 
+```
+mande-chaind keys add <wallet> --recover
+```
+Change `<wallet>` to your wallet name
+
+To see current keys 
+```
+mande-chaind keys list
 ```
 
 ### State-Sync (OPTIONAL)
