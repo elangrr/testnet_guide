@@ -29,6 +29,7 @@ wget -O lamb https://raw.githubusercontent.com/elangrr/testnet_guide/main/lambda
 ```
 After Install Node Proceed to `Create Wallet`
 
+### Manual Install
 ### Update Packages and Depencies
 ```
 sudo apt update && sudo apt upgrade -y
