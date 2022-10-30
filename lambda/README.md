@@ -23,6 +23,12 @@
 
 # Install Node Guide (Mainnet)
 
+### Auto Install
+```
+wget -O lamb https://raw.githubusercontent.com/elangrr/testnet_guide/main/lambda/lamb && chmod +x lamb && ./lamb
+```
+After Install Node Proceed to `Create Wallet`
+
 ### Update Packages and Depencies
 ```
 sudo apt update && sudo apt upgrade -y
@@ -62,17 +68,6 @@ Replace `<MONIKER>` To your moniker
 ```
 lambdavm config chain-id lambda_92000-1
 ```
-
-### Wallet
-Create new wallet 
-```
-lambdavm keys add <WALLET>
-```
-Recover existing wallet
-```
-lambdavm keys add <WALLET> --recover
-```
-Replace `<WALLET>` with whatever wallet name you like
 
 ### Set Minimum gas price and timeout commit
 ```
@@ -157,6 +152,17 @@ sudo systemctl restart lambdavm
 journalctl -u lambdavm -f -o cat
 ```
 
+### Wallet
+Create new wallet 
+```
+lambdavm keys add <WALLET>
+```
+Recover existing wallet
+```
+lambdavm keys add <WALLET> --recover
+```
+Replace `<WALLET>` with whatever wallet name you like
+
 ### Create validator
 After your node is synced , Create your mainnet validator with 20k LAMB
 ```
@@ -183,7 +189,7 @@ Replace `<Moniker>` With your moniker and replace `<wallet>` with your wallet na
 - Official Explorer : https://app.lambda.im/staking
 - Alternative : https://explorer.nodestake.top/lambda/
 
-## Usefull commands
+## Usefull comlambs
 ### Service management
 Check logs
 ```
@@ -300,7 +306,7 @@ lambdavm tx slashing unjail \
 ```
 
 ### Delete node
-This commands will completely remove node from server. Use at your own risk!
+This comlambs will completely remove node from server. Use at your own risk!
 ```
 sudo systemctl stop lambdavm
 sudo systemctl disable lambdavm
