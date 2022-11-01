@@ -30,6 +30,8 @@
 wget -O nibi https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/nibi && chmod +x nibi && ./nibi
 ```
 
+After completing Auto install proceed to `Create Wallet`
+
 # Manual Install Node Guide
 
 ### Set Vars
