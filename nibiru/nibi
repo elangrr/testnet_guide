@@ -59,11 +59,13 @@ cd nibiru
 git checkout v0.15.0
 make install
 
+nibid config chain-id $CHAIN_ID
 nibid init $Nodename --chain-id $CHAIN_ID
 
 # genesis and addrbook
 cd $HOME
-wget -O $HOME/.nibid/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/genesis.json"
+curl -s https://rpc.testnet-1.nibiru.fi/genesis | jq -r .result.genesis > genesis.json
+cp genesis.json $HOME/.nibid/config/genesis.json
 
 
 echo -e "                     \e[1m\e[32m4. Node optimization and improvement--> \e[0m" && sleep 1
