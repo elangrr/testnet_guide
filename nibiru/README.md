@@ -17,7 +17,7 @@
 ### [Nibiru Chain Official Discord](https://discord.gg/2pBbNpgGMm)
 
 # Explorer
-[STAVR Explorer](https://explorer.stavr.tech/mande-chain/staking)
+[STAVR Explorer](https://texplorer.stavr.tech/nibiru/staking)
 
 ## Minimum Requirements 
 - 2 or more physical CPU cores
