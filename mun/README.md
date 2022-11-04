@@ -82,6 +82,7 @@ mund init $NODENAME --chain-id $MUN_CHAIN_ID
 ### Download genesis 
 ```
 curl --tlsv1 https://node1.mun.money/genesis? | jq ".result.genesis" > ~/.mun/config/genesis.json
+wget -O $HOME/.mun/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mun/addrbook.json"
 ```
 
 ### Update seed
