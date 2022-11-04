@@ -26,7 +26,7 @@
 
 # Auto Install
 ```
-wget -O mand https://raw.githubusercontent.com/elangrr/testnet_guide/main/mande%20chain/mand && chmod +x mand && ./mand
+wget -O defund https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/defund && chmod +x defund && ./defund
 ```
 After Using Auto install run 
 ```
@@ -254,7 +254,7 @@ defundd query bank balances <address>
 
 Transfer funds
 ```
-defundd tx bank send <FROM ADDRESS> <TO_MANDE_WALLET_ADDRESS> 10000000mand
+defundd tx bank send <FROM ADDRESS> <TO_defund_WALLET_ADDRESS> 10000000ufetf
 ```
 
 ### Voting
@@ -265,12 +265,12 @@ defundd tx gov vote 1 yes --from wallet --chain-id=$CHAIN_ID
 ### Staking, Delegation and Rewards
 Delegate stake
 ```
-defundd tx staking delegate <mande valoper> 10000000mand --from=wallet --chain-id=$CHAIN_ID --gas=auto
+defundd tx staking delegate <defund valoper> 10000000ufetf --from=wallet --chain-id=$CHAIN_ID --gas=auto
 ```
 
 Redelegate stake from validator to another validator
 ```
-defundd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000mand --from=wallet --chain-id=$CHAIN_ID --gas=auto
+defundd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000ufetf --from=wallet --chain-id=$CHAIN_ID --gas=auto
 ```
 
 Withdraw all rewards
@@ -280,7 +280,7 @@ defundd tx distribution withdraw-all-rewards --from=wallet --chain-id=$CHAIN_ID 
 
 Withdraw rewards with commision
 ```
-defundd tx distribution withdraw-rewards <mande valoper> --from=wallet --commission --chain-id=$CHAIN_ID
+defundd tx distribution withdraw-rewards <defund valoper> --from=wallet --commission --chain-id=$CHAIN_ID
 ```
 
 ### Validator management
