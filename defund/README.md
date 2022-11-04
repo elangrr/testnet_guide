@@ -91,9 +91,10 @@ defundd init $Nodename --chain-id $CHAIN_ID
 Change `$Nodename` to your moniker
 
 
-### Download genesis file
+### Download genesis file and addrbook
 ```
 wget -qO $HOME/.defund/config/genesis.json "https://raw.githubusercontent.com/defund-labs/testnet/main/defund-private-2/genesis.json"
+wget -O $HOME/.defund/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/addrbook.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
