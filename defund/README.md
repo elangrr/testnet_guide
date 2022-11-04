@@ -30,7 +30,7 @@ wget -O def https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/
 ```
 After Using Auto install run 
 ```
-source $HOME/.bash_profile
+source ~/.bash_profile
 ```
 After This , Proceed to `Create Wallet`
 
