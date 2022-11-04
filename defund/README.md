@@ -197,7 +197,7 @@ To check if your node is synced simply run
 ```
 defundd tx staking create-validator \
   --amount 2000000ufetf \
-  --from $WALLET \
+  --from wallet \
   --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
   --commission-rate "0.07" \
