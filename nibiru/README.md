@@ -137,7 +137,7 @@ sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.nibid/config/config.t
 
 ### Download addrbook
 ```
-wget -O $HOME/nibid/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/addrbook.json"
+wget -O $HOME/.nibid/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/addrbook.json"
 ```
 
 ### Create service file and start the node
