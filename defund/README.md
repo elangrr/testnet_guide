@@ -26,7 +26,7 @@
 
 # Auto Install
 ```
-wget -O defund https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/defund && chmod +x defund && ./defund
+wget -O def https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/def && chmod +x def && ./def
 ```
 After Using Auto install run 
 ```
