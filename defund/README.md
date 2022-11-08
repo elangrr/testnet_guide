@@ -93,7 +93,9 @@ Change `$Nodename` to your moniker
 
 ### Download genesis file and addrbook
 ```
-wget -qO $HOME/.defund/config/genesis.json "https://raw.githubusercontent.com/defund-labs/testnet/main/defund-private-2/genesis.json"
+wget https://github.com/defund-labs/testnet/raw/main/defund-private-3/defund-private-3-gensis.tar.gz
+tar -xvzf defund-private-3-gensis.tar.gz
+mv genesis.json $HOME/.defund/config/
 wget -O $HOME/.defund/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/addrbook.json"
 ```
 
