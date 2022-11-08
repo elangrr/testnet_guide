@@ -43,7 +43,7 @@ Nodename=$Nodename
 Change `$Nodename` to your moniker
 ```
 echo export Nodename=${Nodename} >> $HOME/.bash_profile
-echo export CHAIN_ID="defund-private-2" >> $HOME/.bash_profile
+echo export CHAIN_ID="defund-private-3" >> $HOME/.bash_profile
 source ~/.bash_profile
 ```
 
