@@ -6,7 +6,7 @@ do
 # Logo
 
 echo -e "\033[0;35m"
-echo "_   _ ______ _    _ _______ _____   ____  _   _";
+echo " _   _ ______ _    _ _______ _____   ____  _   _";
 echo "| \ | |  ____| |  | |__   __|  __ \ / __ \| \ | |";
 echo "|  \| | |__  | |  | |  | |  | |__) | |  | |  \| |";
 echo "| .   |  __| | |  | |  | |  |  _  /| |  | | .   |";
@@ -15,9 +15,8 @@ echo "|_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_|";
 echo "==============================================================================";
 echo -e '\e[36mPowered by:\e[39m' Nodex Capital
 echo -e '\e[36mWebsite:\e[39m'  https://nodexcapital.com
-echo -e "\e[0m"
 
-echo -e "\e[1m\e[32m"
+
 echo " Welcome to Neutron Installer                                                                                              
 echo " Testnet Version : Quark
 echo " Testnet Chain : quark-1
