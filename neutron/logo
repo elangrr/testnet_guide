@@ -9,11 +9,11 @@ echo "|_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_|";
 echo "=================================================";
 echo -e '\e[36mPowered by:\e[39m' Nodex Capital
 echo -e '\e[36mWebsite:\e[39m'  https://nodexcapital.com
-echo " ";
-echo " ";
-echo " Welcome to Neutron Installer                                                                                              
-echo " Testnet Version : Quark
-echo " Testnet Chain : quark-1
-echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark                                              
+echo -e "\e[0m" 
+
+echo -e "\e[1m\e[32m Welcome to Neutron Installer \e[0m"                                                                                             
+echo -e "\e[1m\e[32m Testnet Version : Quark \e[0m"
+echo -e "\e[1m\e[32m Testnet Chain : quark-1 \e[0m"
+echo -e "\e[1m\e[32m For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark  \e[0m"                                             
 
 
