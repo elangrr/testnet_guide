@@ -20,6 +20,10 @@
 - At least 16GB of memory (RAM)
 - At least 100mbps network bandwidth
 
+
+# TESTNET IS OVER !! TURN OFF YOUR NODE !!!
+
+
 # Install Node Guide
 
 ### Update Packages and Depencies
