@@ -1,0 +1,172 @@
+#!/bin/bash
+
+while true
+do
+
+# Logo
+echo -e "\033[0;35m"
+echo "  _   _ ______ _    _ _______ _____   ____  _   _  ";
+echo " | \ | |  ____| |  | |__   __|  __ \ / __ \| \ | | ";
+echo " |  \| | |__  | |  | |  | |  | |__) | |  | |  \| | ";
+echo " | . ` |  __| | |  | |  | |  |  _  /| |  | | . ` | ";
+echo " | |\  | |____| |__| |  | |  | | \ \| |__| | |\  | ";
+echo " |_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_| ";
+echo " Powered by Nodex Capital                           ";
+echo "                                                    ";
+echo " Welcome to Neutron Installer                       ";                                            
+echo "                                                    ";
+echo "                                                    ";
+echo " Testnet Version : Quark                            ";
+echo " Testnet Chain : quark-1                            ";
+echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark ";
+
+
+# Menu
+
+PS3='Select an action: '
+options=(
+"Install Node"
+"Check node logs"
+"Synchronization via StateSync"
+"Synchronization via SnapShot"
+"Update Node (SOON)"
+"Delete Node"
+"Exit")
+select opt in "${options[@]}"
+do
+case $opt in
+
+"Install Node")
+echo "*********************"
+echo -e "\e[1m\e[35m		Lets's begin\e[0m"
+echo "*********************"
+echo -e "\e[1m\e[32m	Enter your Node Name:\e[0m"
+echo "_|-_|-_|-_|-_|-_|-_|"
+read Nodename
+echo "_|-_|-_|-_|-_|-_|-_|"
+echo export Nodename=${Nodename} >> $HOME/.bash_profile
+echo export CHAIN_ID="quark-1" >> $HOME/.bash_profile
+source ~/.bash_profile
+
+echo -e "\e[1m\e[32m1. Updating packages and dependencies--> \e[0m" && sleep 1
+#UPDATE APT
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl tar wget clang pkg-config libssl-dev libleveldb-dev jq build-essential bsdmainutils git make ncdu htop snapd screen unzip bc fail2ban htop -y
+
+echo -e "        \e[1m\e[32m2. Installing GO--> \e[0m" && sleep 1
+#INSTALL GO
+ver="1.19" && \
+cd $HOME && \
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
+sudo rm -rf /usr/local/go && \
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
+rm "go$ver.linux-amd64.tar.gz" && \
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && \
+source $HOME/.bash_profile && \
+go version
+
+echo -e "              \e[1m\e[32m3. Downloading and building binaries--> \e[0m" && sleep 1
+#INSTALL
+cd $HOME
+git clone -b v0.1.1 https://github.com/neutron-org/neutron.git
+cd neutron
+make install
+
+neutrond config chain-id $CHAIN_ID
+neutrond config keyring-backend test
+neutrond init $Nodename --chain-id $CHAIN_ID
+
+# genesis and addrbook
+cd $HOME
+curl -s https://raw.githubusercontent.com/neutron-org/testnets/main/quark/genesis.json > ~/.neutrond/config/genesis.json
+
+echo -e "                     \e[1m\e[32m4. Node optimization and improvement--> \e[0m" && sleep 1
+
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ufetf\"/" $HOME/.neutrond/config/app.toml
+SEEDS="e2c07e8e6e808fb36cca0fc580e31216772841df@seed-1.quark.ntrn.info:26656,c89b8316f006075ad6ae37349220dd56796b92fa@tenderseed.ccvalidators.com:29001"
+PEERS="fcde59cbba742b86de260730d54daa60467c91a5@23.109.158.180:26656,5bdc67a5d5219aeda3c743e04fdcd72dcb150ba3@65.109.31.114:2480,3e9656706c94ae8b11596e53656c80cf092abe5d@65.21.250.197:46656,9cb73281f6774e42176905e548c134fc45bbe579@162.55.134.54:26656,27b07238cf2ea76acabd5d84d396d447d72aa01b@65.109.54.15:51656,f10c2cb08f82225a7ef2367709e8ac427d61d1b5@57.128.144.247:26656,20b4f9207cdc9d0310399f848f057621f7251846@222.106.187.13:40006,5019864f233cee00f3a6974d9ccaac65caa83807@162.19.31.150:55256,2144ce0e9e08b2a30c132fbde52101b753df788d@194.163.168.99:26656,b37326e3acd60d4e0ea2e3223d00633605fb4f79@nebula.p2p.org:26656"
+sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.neutrond/config/config.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.001untrn\"/" $HOME/.neutrond/config/app.toml
+sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"2s\"/" $HOME/.neutrond/config/app.toml
+
+# pruning and indexer
+pruning="custom"
+pruning_keep_recent="100"
+pruning_keep_every="0"
+pruning_interval="50"
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.neutrond/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.neutrond/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.neutrond/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.neutrond/config/app.toml
+indexer="null" && \
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.neutrond/config/config.toml
+
+sudo tee /etc/systemd/system/neutrond.service > /dev/null <<EOF
+[Unit]
+Description=Neutron
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which neutrond) start --home $HOME/.neutrond
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# start service
+sudo systemctl daemon-reload
+sudo systemctl enable neutrond
+sudo systemctl restart neutrond
+
+echo '=============== SETUP FINISHED, PROCEED TO CREATE WALLET NOW!! ==================='
+echo -e 'Congratulations:        \e[1m\e[32mSUCCESSFUL NODE INSTALLATION\e[0m'
+echo -e 'To check logs:        \e[1m\e[33mjournalctl -u neutrond -f -o cat\e[0m'
+echo -e "To check sync status: \e[1m\e[35mcurl -s localhost:26657/status\e[0m"
+
+
+break
+;;
+"Synchronization via StateSync")
+
+
+
+break
+;;
+"Update Node (SOON)")
+echo -e "        \e[1m\e[32mVERSION\e[0m"
+neutrond version
+
+break
+;;
+"Check node logs")
+journalctl -u neutrond -f -o cat
+
+
+break
+;;
+"Synchronization via SnapShot")
+echo -e "      \e[1m\e[32m SOOOOON  \e[0m"
+
+break
+;;
+"Delete Node")
+sudo systemctl stop neutrond && \
+sudo systemctl disable neutrond && \
+rm /etc/systemd/system/neutrond.service && \
+sudo systemctl daemon-reload && \
+cd $HOME && \
+rm -rf neutrond && \
+rm -rf .neutrond && \
+rm -rf $(which neutrond)
+
+break
+;;
+"Exit")
+exit
+esac
+done
+done
