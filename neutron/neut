@@ -15,7 +15,7 @@ options=(
 "Check node logs"
 "Synchronization via StateSync"
 "Synchronization via SnapShot"
-"Update Node (SOON)"
+"Update Node SOON"
 "Delete Node"
 "Exit")
 select opt in "${options[@]}"
@@ -122,7 +122,7 @@ break
 
 break
 ;;
-"Update Node (SOON)")
+"Update Node SOON")
 echo -e "        \e[1m\e[32mVERSION\e[0m"
 neutrond version
 
