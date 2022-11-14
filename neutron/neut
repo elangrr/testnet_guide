@@ -13,6 +13,7 @@ echo " | |\  | |____| |__| |  | |  | | \ \| |__| | |\  | ";
 echo " |_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_| ";
 echo " Powered by Nodex Capital                           ";
 echo "                                                    ";
+echo -e "\e[1m\e[35m
 echo " Welcome to Neutron Installer                       ";                                            
 echo "                                                    ";
 echo "                                                    ";
