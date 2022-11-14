@@ -3,7 +3,7 @@ Update Hypersign to ver 1.0.3 Block : `667000`
 ### (OPTION 1)
 Manual Upgrade
 
-`DO NOT UPGRADE BEFORE CHAIN RECHES THE BLOCK 667000`
+`DO NOT UPGRADE BEFORE CHAIN REACHES THE BLOCK 667000`
 ```
 sudo systemctl stop hid-noded
 cd $HOME && rm -rf core
