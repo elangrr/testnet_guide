@@ -14,6 +14,6 @@ echo " ";
 echo " Welcome to Neutron Installer                                                                                              
 echo " Testnet Version : Quark
 echo " Testnet Chain : quark-1
-echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark ";                                                 
+echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark                                              
 echo -e "\e[0m"
-echo " ";
+
