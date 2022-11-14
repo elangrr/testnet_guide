@@ -24,6 +24,7 @@ echo " Testnet Chain : quark-1
 echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark ";                                                 
 echo -e "\e[0m"
 
+#!/bin/bash
 # Menu
 
 PS3='Select an action: '
