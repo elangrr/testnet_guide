@@ -4,11 +4,12 @@ while true
 do
 
 # Logo
+
 echo -e "\033[0;35m"
 echo "  _   _ ______ _    _ _______ _____   ____  _   _";
 echo " | \ | |  ____| |  | |__   __|  __ \ / __ \| \ | |";
 echo " |  \| | |__  | |  | |  | |  | |__) | |  | |  \| |";
-echo " |     |  __| | |  | |  | |  |  _  /| |  | | .   |";
+echo " | .   |  __| | |  | |  | |  |  _  /| |  | | .   |";
 echo " | |\  | |____| |__| |  | |  | | \ \| |__| | |\  |";
 echo " |_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_|";
 echo " ==============================================================================";
@@ -21,7 +22,7 @@ echo " Welcome to Neutron Installer
 echo " Testnet Version : Quark
 echo " Testnet Chain : quark-1
 echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark ";                                                 
-
+echo -e "\e[0m"
 
 # Menu
 
