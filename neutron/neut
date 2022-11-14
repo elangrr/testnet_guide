@@ -5,24 +5,7 @@ do
 
 # Logo
 
-echo -e "\033[0;35m"
-echo " _   _ ______ _    _ _______ _____   ____  _   _";
-echo "| \ | |  ____| |  | |__   __|  __ \ / __ \| \ | |";
-echo "|  \| | |__  | |  | |  | |  | |__) | |  | |  \| |";
-echo "| .   |  __| | |  | |  | |  |  _  /| |  | | .   |";
-echo "| |\  | |____| |__| |  | |  | | \ \| |__| | |\  |";
-echo "|_| \_|______|\____/   |_|  |_|  \_\\____/|_| \_|";
-echo "==============================================================================";
-echo -e '\e[36mPowered by:\e[39m' Nodex Capital
-echo -e '\e[36mWebsite:\e[39m'  https://nodexcapital.com
-
-
-echo " Welcome to Neutron Installer                                                                                              
-echo " Testnet Version : Quark
-echo " Testnet Chain : quark-1
-echo " For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark ";                                                 
-echo -e "\e[0m"
-
+curl -s https://raw.githubusercontent.com/elangrr/testnet_guide/main/neutron/logo | bash
 
 # Menu
 
