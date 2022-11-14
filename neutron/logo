@@ -11,9 +11,9 @@ echo -e '\e[36mPowered by:\e[39m' Nodex Capital
 echo -e '\e[36mWebsite:\e[39m'  https://nodexcapital.com
 echo -e "\e[0m" 
 
-echo -e "\e[1m\e[32m Welcome to Neutron Installer \e[0m"                                                                                             
-echo -e "\e[1m\e[32m Testnet Version : Quark \e[0m"
-echo -e "\e[1m\e[32m Testnet Chain : quark-1 \e[0m"
-echo -e "\e[1m\e[32m For official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark  \e[0m"                                             
+echo -e "\e[1m\e[32mWelcome to Neutron Installer \e[0m"                                                                                             
+echo -e "\e[1m\e[32mTestnet Version : Quark \e[0m"
+echo -e "\e[1m\e[32mTestnet Chain : quark-1 \e[0m"
+echo -e "\e[1m\e[32mFor official Documents visit : https://github.com/neutron-org/testnets/tree/main/quark  \e[0m"                                             
 
 
