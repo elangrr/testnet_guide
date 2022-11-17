@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#logo
+
+curl -s https://raw.githubusercontent.com/elangrr/elangrr/main/logo | bash
+
+
+sleep 2
+
+# set vars
+if [ ! $PRIV_KEY ]; then
+	read -p "Enter MM Private Key: " PRIV_KEY
+	echo 'export PRIV_KEY='$PRIV_KEY >> $HOME/.bash_profile
+fi
+source $HOME/.bash_profile
+
+echo '================================================='
+echo -e "Your node name: \e[1m\e[32m$NODENAME\e[0m"
+echo -e "Your wallet name: \e[1m\e[32m$WALLET\e[0m"
+echo '================================================='
+sleep 2
+
+echo -e "\e[1m\e[32m1. Updating packages... \e[0m" && sleep 1
+# update
+sudo apt update && sudo apt upgrade -y
+
+echo -e "\e[1m\e[32m2. Installing dependencies... \e[0m" && sleep 1
+# packages
+sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
+
+# configure gpg and adding to repo list
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL repo.chainflip.io/keys/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/chainflip.gpg
+echo "deb [signed-by=/etc/apt/keyrings/chainflip.gpg] https://repo.chainflip.io/perseverance/ focal main" | sudo tee /etc/apt/sources.list.d/chainflip.list
+
+echo -e "\e[1m\e[32m3. Downloading and building binaries... \e[0m" && sleep 1
+# download binary
+sudo apt-get update
+sudo apt-get install -y chainflip-cli chainflip-node chainflip-engine
+
+# configure
+sudo mkdir /etc/chainflip/keys
+echo -n "$PRIV_KEY" |  sudo tee /etc/chainflip/keys/ethereum_key_file
+
+# init
+chainflip-node key generate
+
+
