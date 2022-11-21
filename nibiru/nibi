@@ -65,7 +65,7 @@ nibid init $Nodename --chain-id $CHAIN_ID
 # genesis and addrbook
 cd $HOME
 curl -s https://rpc.testnet-1.nibiru.fi/genesis | jq -r .result.genesis > genesis.json
-cp genesis.json $HOME/.nibid/config/genesis.json
+cp genesis.json $HOME/.nibid/config/
 wget -O $HOME/.nibid/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/addrbook.json"
 
 
