@@ -20,6 +20,8 @@
  <img height="250" height="auto" src="https://user-images.githubusercontent.com/107190154/190568136-14f5a7d8-5b15-46fb-8132-4d38a0779171.gif">
 </p>
 
+# TESTNET IS OVER
+
 # Official Links
 ### [Official Document](https://docs.nulink.org/products/testnet)
 ### [Nulink Official Website](https://www.nulink.org/)
