@@ -86,7 +86,7 @@ PEERS=`curl -s https://raw.githubusercontent.com/pointnetwork/point-chain-config
 sed -i.bak -e "s/^persistent_peers *=.*/persistent	_peers = \"$PEERS\"/" $HOME/.pointd/config/config.toml
 ```
 
-Indexer and Pruning (OPTIONAL)
+### Indexer and Pruning (OPTIONAL)
 ```
 indexer="null"
 pruning="custom"
