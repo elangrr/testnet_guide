@@ -35,8 +35,25 @@ wget -O point.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/po
 source $HOME/.bash_profile
 ```
 
-### Update Binary (OPTIONAL)
-Check version by typing `pointd version` if it shows version lower than v.0.0.3 then you need to update or else dont.
+## Manual Installation
+
+## Set Vars
+```
+NODENAME=YOUR_MONIKER
+```
+Change `YOUR_MONIKER` To your Moniker
+```
+echo 'export NODENAME='$NODENAME >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
+
+### Download Update Prequisites
+```
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl build-essential git wget jq make gcc tmux -y
+```
+
+### Download Binary 
 ```
 cd $HOME
 rm -rf point-chain
@@ -47,70 +64,80 @@ make install
 sudo systemctl restart pointd && sudo journalctl -u pointd -f -o cat
 ```
 
-### Check info Sync
-Note : You have to synced to the lastest block , check the sync status with this command
+### Init
 ```
-pointd status 2>&1 | jq .SyncInfo
+pointd init $NODENAME --chain-id point_10687-1
+```
+
+### Download Genesis and Config
+```
+wget https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/config.toml
+wget https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/genesis.json
+mv config.toml genesis.json ~/.pointd/config/
+```
+
+### Set Peers
+```
+PEERS=`curl -s https://raw.githubusercontent.com/pointnetwork/point-chain-config/main/mainnet-1/peers.txt`
+sed -i.bak -e "s/^persistent_peers *=.*/persistent	_peers = \"$PEERS\"/" $HOME/.pointd/config/config.toml
+```
+
+Indexer and Pruning (OPTIONAL)
+```
+indexer="null"
+pruning="custom"
+pruning_keep_recent="100"
+pruning_keep_every="0"
+pruning_interval="10"
+
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.pointd/config/config.toml
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.pointd/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.pointd/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.pointd/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.pointd/config/app.toml
+```
+### Reset
+```
+pointd tendermint unsafe-reset-all --home $HOME/.pointd
+```
+
+### Create Service and Start Node
+```
+sudo tee /etc/systemd/system/pointd.service > /dev/null <<EOF
+[Unit]
+Description=point
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which pointd) start --home $HOME/.pointd
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+```
+sudo systemctl daemon-reload
+sudo systemctl enable pointd
+sudo systemctl restart pointd
 ```
 
 ## Create Wallet
 Create validator wallet using this command, Dont forget to save the Mnemonic!
 ```
-pointd keys add $VALIDATORKEY 
+pointd keys add wallet 
 ```
 (OPTIONAL) To recover using your previous saved wallet
 ```
-pointd keys add $VALIDATORKEY --recover
+pointd keys add wallet --recover
 ```
 To get current list of wallet
 ```
 pointd keys list 
 ```
-To get private key of validator wallet (SAVE IT SOMEWHERE SAFE!)
-```
-pointd keys unsafe-export-eth-key validatorkey --keyring-backend file
-```
-## Safe wallet Info
-```
-POINTD_WALLET_ADDRESS=$(pointd keys show $VALIDATORKEY -a)
-POINTD_VALOPER_ADDRESS=$(pointd keys show $VALIDATORKEY --bech val -a)
-echo 'export POINTD_WALLET_ADDRESS='${POINTD_WALLET_ADDRESS} >> $HOME/.bash_profile
-echo 'export POINTD_VALOPER_ADDRESS='${POITD_VALOPER_ADDRESS} >> $HOME/.bash_profile
-source $HOME/.bash_profile
-```
-## Fund your wallet
-Wait for Point sent to your address
-
-## Sending your first transaction
-### Add custom network
-Now while you're waiting for the node to sync, you need to send funds to your validator address. You will need to import a custom network into your wallet, e.g. for Metamask:
-
-```
-Network Title: Point
-RPC URL: https://rpc-mainnet-1.point.space/
-Chain ID: 10687
-SYMBOL: POINT
-```
-### Find out which address is your validator wallet
-point has two wallet formats: Cosmos format, and Ethereum format. Cosmos format starts with `point` prefix, and Ethereum format starts with `0x`. Most people don't need to know about Cosmos format, but validators should have a way to change from one to another.
-
-Run 
-```
-pointd keys list
-```
-you will see a list of keys attached to your node. Look at the one which has the name `validatorkey`, and note its address (it should be in Cosmos format and start with `point` prefix).
-
-(In most cases it is not needed, but if something goes wrong and if you ever want to import your validator wallet in your Metamask you will need the private key. You can get it with this command: 
-```
-pointd keys unsafe-export-eth-key validatorkey --keyring-backend file
-```
-
-Use this tool to convert it to Ethereum format: https://pointnetwork.io/converter.html
-
-This is your validator address in Ethereum format.
-
-### Fund the validator
-Finally, send enough POINT to your validator address
 
 ## Create Validator
 Before creating validator please make sure you have the funds already in your wallet
@@ -122,19 +149,50 @@ To create a validator with 1000point delegation use this command below :
 
 ```
 pointd tx staking create-validator \
---amount=1000000000000000000000apoint \
+--amount=100000000000000000000apoint \
 --pubkey=$(pointd tendermint show-validator) \
 --moniker=$NODENAME \
---chain-id=$POINT_CHAIN_ID \
---commission-rate="0.10" \
---commission-max-rate="0.20" \
+--chain-id=point_10687-1 \
+--commission-rate="0.05" \
+--commission-max-rate="0.10" \
 --commission-max-change-rate="0.01" \
 --min-self-delegation="1" \
 --gas="400000" \
 --gas-prices="0.025apoint" \
---from=validatorkey \
+--from=wallet
 ```
-NOTE : 1000000000000000000000apoint is 1000 Point
+NOTE : 100000000000000000000apoint is 100 Point
+
+`commision rate : 5%`
+
+### State-Sync (OPTIONAL)
+```
+sudo systemctl stop pointd
+
+cp $HOME/.pointd/data/priv_validator_state.json $HOME/.pointd/priv_validator_state.json.backup
+pointd tendermint unsafe-reset-all --home $HOME/.pointd --keep-addr-book
+
+SNAP_RPC="http://rpc-mainnet-1.point.space:26659"
+
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
+echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
+
+peers="8673c1f04c29c464189e8bf29e51fb0b38da2f19@rpc-mainnet-1.point.space:26656"
+sed -i 's|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.pointd/config/config.toml
+
+sed -i -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
+s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.pointd/config/config.toml
+
+mv $HOME/.pointd/priv_validator_state.json.backup $HOME/.pointd/data/priv_validator_state.json
+
+sudo systemctl restart pointd
+sudo journalctl -u pointd -f --no-hostname -o cat
+```
 
 ## Monitoring your validator
 
@@ -190,17 +248,17 @@ pointd status 2>&1 | jq .NodeInfo
 To delegate to your validator run this command :
  Note : Change <ammount> to your like , for example : 1000000000000000000000apoint is 1000point
 ```
-pointd tx staking delegate <point valoper> 1000000000000000000000apoint --from=validatorkey --chain-id=$POINT_CHAIN_ID --gas-prices=0.025apoint --gas=400000 
+pointd tx staking delegate <point valoper> 1000000000000000000000apoint --from=validatorkey --chain-id=point_10687-1 --gas-prices=0.025apoint --gas=400000 
 ```
 Change `<point valoper>` to your valoper address 
 
 To Withdraw all rewards without commision
 ```
-pointd tx distribution withdraw-all-rewards --from=validatorkey --chain-id $POINT_CHAIN_ID --gas-prices=0.025apoint
+pointd tx distribution withdraw-all-rewards --from=validatorkey --chain-id point_10687-1 --gas-prices=0.025apoint
 ```
 To Withdraw rewards with commision
 ```
-pointd tx distribution withdraw-rewards <point val> --from=validatorkey --commission --chain-id $POINT_CHAIN_ID --gas-prices=0.025apoint
+pointd tx distribution withdraw-rewards <point val> --from=validatorkey --commission --chain-id point_10687-1 --gas-prices=0.025apoint
 ```
 If failed remove `--gas-prices=0.025apoint`
 
@@ -214,7 +272,7 @@ pointd debug addr <point address>
 ## Validator Management
 Unjail Validator (MAKE SURE YOU ARE SYNCED WITH THE LASTEST NODE , and have 1000 Point Delegation!!)
 ```
-pointd tx slashing unjail --from=validatorkey --chain-id=$POINT_CHAIN_ID --gas-prices=0.025apoint
+pointd tx slashing unjail --from=validatorkey --chain-id=point_10687-1 --gas-prices=0.025apoint
 ```
 Check if your validator is active: (if the output is non-empty, you are a validator)
 ```
