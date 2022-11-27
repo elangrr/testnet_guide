@@ -61,7 +61,6 @@ git clone https://github.com/pointnetwork/point-chain && cd point-chain
 git fetch --all
 git checkout tags/v0.0.4
 make install
-sudo systemctl restart pointd && sudo journalctl -u pointd -f -o cat
 ```
 
 ### Init
