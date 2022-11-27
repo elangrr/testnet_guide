@@ -274,6 +274,16 @@ pointd debug addr <point address>
 ```
   
 ## Validator Management
+Edit Validator
+```
+pointd tx staking edit-validator \
+  --identity=keybaseid \
+  --website="https://yoursite.c" \
+  --details="Your Description" \
+  --chain-id=point_10687-1 \
+  --from=wallet
+```
+
 Unjail Validator (MAKE SURE YOU ARE SYNCED WITH THE LASTEST NODE , and have 1000 Point Delegation!!)
 ```
 pointd tx slashing unjail --from=validatorkey --chain-id=point_10687-1 --gas-prices=0.025apoint
