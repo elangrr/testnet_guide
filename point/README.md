@@ -26,16 +26,8 @@
  - At least 32GB of memory (RAM)
  - At least 100mbps network bandwidth
 
-## Automatic Install ##
-```
-wget -O point.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/point/point.sh && chmod +x point.sh && ./point.sh
-```
-## After install please Load Variable! (Post Installation)
-```
-source $HOME/.bash_profile
-```
 
-## Manual Installation
+## Installation
 
 ## Set Vars
 ```
@@ -51,6 +43,19 @@ source $HOME/.bash_profile
 ```
 sudo apt update && sudo apt upgrade -y
 sudo apt install curl build-essential git wget jq make gcc tmux -y
+```
+### Install GO (1.18.2)
+```
+if ! [ -x "$(command -v go)" ]; then
+  ver="1.18.2"
+  cd $HOME
+  wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+  sudo rm -rf /usr/local/go
+  sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+  rm "go$ver.linux-amd64.tar.gz"
+  echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+  source ~/.bash_profile
+fi
 ```
 
 ### Download Binary 
