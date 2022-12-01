@@ -13,6 +13,7 @@
 # Official Links
 ### [Aleo Official Website](https://www.aleo.org/)
 ### [Aleo Discord](https://discord.gg/aleohq)
+### [SnarkOS Official Guide](https://github.com/AleoHQ/snarkOS)
 
 ## Minimum Requirements 
 - CPU	16 cores (32 preferred)
@@ -24,7 +25,7 @@
 
 `NOTE2 : Run as ROOT User!!`
 
-# Aleo Incentivized Testnet Guide
+# Aleo Incentivized Testnet Guide (PROVER)
 
 ### Update depencies
 ```
@@ -60,7 +61,7 @@ source $HOME/.bashrc
 source $HOME/.cargo/env
 ```
 
-### Create new account (account store in $HOME/aleo/account_new.txt)
+### Create new account (account stored in $HOME/aleo/account_new.txt)
 ```
 mkdir $HOME/aleo
 > $HOME/aleo/account_new.txt
@@ -69,36 +70,12 @@ snarkos account new >>$HOME/aleo/account_new.txt
 ```
 Backup your account `cat $HOME/aleo/account_new.txt`
 
-### Set Private key to your prover
+### Set Private key to profile
 ```
 mkdir -p /var/aleo/
 cat $HOME/aleo/account_new.txt >>/var/aleo/account_backup.txt
 echo 'export PROVER_PRIVATE_KEY'=$(grep "Private Key" $HOME/aleo/account_new.txt | awk '{print $3}') >> $HOME/.bash_profile
 source $HOME/.bash_profile
-```
-
-### Create Service File for Aleo Client Node
-```
-echo "[Unit]
-Description=Aleo Client Node
-After=network-online.target
-[Service]
-User=$USER
-ExecStart=$(which snarkos) start --nodisplay --client ${PROVER_PRIVATE_KEY}
-Restart=always
-RestartSec=10
-LimitNOFILE=10000
-[Install]
-WantedBy=multi-user.target
-" > $HOME/aleo-client.service
- mv $HOME/aleo-client.service /etc/systemd/system
- tee <<EOF >/dev/null /etc/systemd/journald.conf
-Storage=persistent
-EOF
-```
-Start your client
-```
-systemctl restart systemd-journald
 ```
 
 ### Create Service file for Prover
@@ -118,3 +95,79 @@ WantedBy=multi-user.target
  mv $HOME/aleo-prover.service /etc/systemd/system
  ```
  
+### Install Updater (OPTIONAL)
+```
+wget -q -O $HOME/updater.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/aleo/updater.sh && chmod +x $HOME/updater.sh
+```
+Create Updater Service file
+```
+echo "[Unit]
+Description=Aleo Updater
+After=network-online.target
+[Service]
+User=$USER
+WorkingDirectory=$HOME/snarkOS
+ExecStart=/bin/bash $HOME/updater.sh
+Restart=always
+RestartSec=10
+LimitNOFILE=10000
+[Install]
+WantedBy=multi-user.target
+" > $HOME/aleo-updater.service
+mv $HOME/aleo-updater.service /etc/systemd/system
+```
+```
+systemctl daemon-reload
+systemctl enable aleo-updater
+systemctl restart aleo-updater
+```
+### Start Prover
+```
+systemctl enable aleo-prover
+systemctl restart aleo-prover
+```
+### Check logs
+```
+journalctl -u aleo-prover -f -o cat
+```
+
+## Cheat Sheet
+
+View you Private key
+```
+cat $HOME/aleo/account_new.txt
+```
+
+Check What Aleo Private Key is used
+```
+grep "prover" /etc/systemd/system/aleo-prover.service | awk '{print $5}'
+```
+
+Check prover Logs
+```
+journalctl -u aleo-prover -f -o cat
+```
+
+## Troubleshootings
+
+- My node is unable to compile.
+
+  Ensure your machine has `ust v1.65+` installed. Instructions to [install Rust can be found here.](https://www.rust-lang.org/tools/install)  
+  If large errors appear during compilation, try running `cargo clean`.
+ 
+- My node is unable to connect to peers on the network.
+
+  Ensure ports `4133/tcp` and `3033/tcp` are open on your router and OS firewall.
+
+- I can't generate a new address
+
+  Before running the command above (snarkos account new) try `source ~/.bashrc`
+  Also double-check the spelling of snarkos. Note the directory is `/snarkOS`
+  
+### Remove Aleo Prover ( WARNING! THIS COMMAND WILL REMOVE ALEO FROM YOUR MACHINE! )
+```
+rm $(which snarkos)
+rm -rf /etc/systemd/system/aleo*
+rm -rf aleo/
+rm -rf aleo .aleo .cargo .rustup .ledger-2 snarkOS updater.sh
+```
