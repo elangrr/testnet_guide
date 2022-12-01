@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
- <img height="150" height="auto" src="https://user-images.githubusercontent.com/34649601/196217517-3e2c030f-7af3-46f2-9042-81176ce9d143.png">
+ <img height="250" height="auto" src="https://camo.githubusercontent.com/973307a6c53e7088805c6fabbde538c8242f5ce8bbd4b0937b176b4e6df87b69/68747470733a2f2f63646e2e616c656f2e6f72672f736e61726b6f732f62616e6e65722e706e67">
 </p>
 
 # Official Links
