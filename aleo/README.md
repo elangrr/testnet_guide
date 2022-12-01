@@ -169,5 +169,5 @@ journalctl -u aleo-prover -f -o cat
 rm $(which snarkos)
 rm -rf /etc/systemd/system/aleo*
 rm -rf aleo/
-rm -rf aleo .aleo .cargo .rustup .ledger-2 snarkOS updater.sh
+rm -rf aleo .aleo .cargo .rustup snarkOS updater.sh
 ```
