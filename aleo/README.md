@@ -27,6 +27,13 @@
 
 # Aleo Incentivized Testnet Guide (PROVER)
 
+### Open port 
+```
+ufw allow ssh
+ufw enable
+```
+`y`
+
 ### Update depencies
 ```
 apt update
