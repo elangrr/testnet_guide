@@ -31,6 +31,8 @@
 ```
 apt update
 apt upgrade -y
+```
+```
 apt install make clang pkg-config libssl-dev build-essential gcc xz-utils git curl vim tmux ntp jq llvm ufw -y
 ```
 
