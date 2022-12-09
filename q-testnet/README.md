@@ -127,7 +127,7 @@ Then add `--ethstats=ITN-testname-ecd07:qstats-testnet@stats.qtestnet.org`
 
 Example : 
 
-<img height="450" height="auto" src="https://user-images.githubusercontent.com/34649601/206744942-380d5e57-3f93-48f0-a17c-40c623f962b4.png">
+<img height="450" height="auto" src="https://user-images.githubusercontent.com/34649601/206747640-e29e7f73-a549-416a-b52f-6a138f402212.png">
 
 
 Then Run the Validator : 
@@ -135,12 +135,44 @@ Then Run the Validator :
 docker compose up -d
 ```
 
-Check logs 
+Check logs ( You have to be in the compose directory! )
 ```
 docker compose logs -f
 ```
 CTRL+C to exit logs
 
-Check your validator 
+## Check your validator 
 
-[Q Explorer](https://stats.qtestnet.org/)
+### [Q Explorer](https://stats.qtestnet.org/)
+
+# Run OmniBride (OPTIONAL) For learning purposes
+
+### Configure Omnibride Oracle
+```
+cd $HOME
+cd testnet-public-tools/omnibridge-oracle
+cp .env.testnet .env
+nano .env
+```
+
+Change this 3 Value 
+
+<img height="450" height="auto" src="https://user-images.githubusercontent.com/34649601/206751937-40a418fc-c60d-4d3c-bebc-c7814b065b86.png">
+
+
+`ORACLE_VALIDATOR_ADDRESS` :	`Provide your Q validator address. Example: 0xac8e5047d122f801...`
+
+`ORACLE_VALIDATOR_ADDRESS_PRIVATE_KEY` :	`Provide your Q validator private key. Example: a385db8296ceb9a....`
+
+`COMMON_HOME_RPC_URL` :	`You can keep the default, use https://rpc.qtestnet.org or use the RPC endpoint of our own full node if you are operating one.`
+
+`COMMON_FOREIGN_RPC_URL` :	`Provide an RPC endpoint of a client of the blockchain on the other side of the bridge. Q testnet bridged to the Ethereum Rinkeby network. You can use your own ethereum client, a public endpoint or create an infura account for free to get a personal Ethereum Rinkeby access point (e.g. https://rinkeby.infura.io/v3/1673abc....).`
+
+### Run your docker-compose
+```
+docker compose up -d
+docker compose logs -f
+```
+To check logs You have to be in the compose directory!
+
+`CTRL+C` to exit logs
