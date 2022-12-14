@@ -178,6 +178,7 @@ After your node is synced, create validator
 To check if your node is synced simply run
 `curl http://localhost:26657/status sync_info "catching_up": false`
 
+Create validator with 9 Nolus
 ```
 nolusd tx staking create-validator \
   --amount 9000000unls \
