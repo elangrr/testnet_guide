@@ -15,7 +15,7 @@
 ### [Nolus Official Discord](https://discord.gg/nolus-protocol)
 
 # Explorer
-### SOON
+### [Indonode Explorer](https://explorer.indonode.dev/nolus)
 
 ## Minimum Requirements 
 - 2 or more physical CPU cores
