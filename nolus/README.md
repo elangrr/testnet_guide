@@ -93,6 +93,7 @@ Change `$Nodename` to your moniker
 ### Download genesis file and addrbook
 ```
 wget -O $HOME/.nolus/config/genesis.json "https://raw.githubusercontent.com/Nolus-Protocol/nolus-networks/main/testnet/nolus-rila/genesis.json"
+wget -O $HOME/.nolus/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nolus/addrbook.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
@@ -187,7 +188,8 @@ nolusd tx staking create-validator \
   --min-self-delegation "1" \
   --pubkey  $(nolusd tendermint show-validator) \
   --moniker $Nodename \
-  --chain-id $CHAIN_ID
+  --chain-id $CHAIN_ID \
+  --fees 500unls
 ```
 
 ## Usefull commands
