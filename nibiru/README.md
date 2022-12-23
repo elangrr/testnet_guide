@@ -196,10 +196,8 @@ systemctl restart nibid && journalctl -u nibid -f -o cat
 ```
 
 ### Ask for faucet
-```
-curl -X POST -d '{"address": "'"<ADDRESS>"'", "coins": ["10000000unibi","100000000000unusd"]}' "https://faucet.testnet-1.nibiru.fi/"
-```
-Change `<ADDRESS>` to your address
+ 
+Go to discord Nibiru
 
 ### Create validator
 After your node is synced, create validator
