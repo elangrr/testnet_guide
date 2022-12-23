@@ -45,7 +45,7 @@ Nodename=<MONIKER>
 Change `<MONIKER>` With your own Moniker
 ```
 echo export Nodename=${Nodename} >> $HOME/.bash_profile
-echo export CHAIN_ID="nibiru-testnet-1" >> $HOME/.bash_profile
+echo export CHAIN_ID="nibiru-testnet-2" >> $HOME/.bash_profile
 source ~/.bash_profile
 ```
 
@@ -61,7 +61,7 @@ sudo apt install curl tar wget clang pkg-config libssl-dev libleveldb-dev jq bui
 
 ### Install GO
 ```
-ver="1.18.2" && \
+ver="1.19.4" && \
 cd $HOME && \
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
 sudo rm -rf /usr/local/go && \
@@ -77,7 +77,7 @@ go version
 cd $HOME
 git clone https://github.com/NibiruChain/nibiru
 cd nibiru
-git checkout v0.15.0
+git checkout v0.16.2
 make install
 ```
 ### Config
@@ -90,11 +90,10 @@ nibid config chain-id $CHAIN_ID
 nibid init $Nodename --chain-id $CHAIN_ID
 ```
 
-### Download genesis file
+### Download genesis file and addrbook
 ```
-cd $HOME
-curl -s https://rpc.testnet-1.nibiru.fi/genesis | jq -r .result.genesis > genesis.json
-cp genesis.json $HOME/.nibid/config/genesis.json
+curl -Ls https://snapshots.kjnodes.com/nibiru-testnet/genesis.json > $HOME/.nibid/config/genesis.json
+curl -Ls https://snapshots.kjnodes.com/nibiru-testnet/addrbook.json > $HOME/.nibid/config/addrbook.json
 ```
 
 ### Set minimum gas price , seeds , and peers
@@ -133,11 +132,6 @@ sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" ~
 ```
 indexer="null" && \
 sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.nibid/config/config.toml
-```
-
-### Download addrbook
-```
-wget -O $HOME/.nibid/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/addrbook.json"
 ```
 
 ### Create service file and start the node
