@@ -17,7 +17,7 @@
 ### [Nibiru Chain Official Discord](https://discord.gg/2pBbNpgGMm)
 
 # Explorer
-[STAVR Explorer](https://texplorer.stavr.tech/nibiru/staking)
+[Indonode Explorer](https://explorer.indonode.dev/nibiru)
 
 ## Minimum Requirements 
 - 2 or more physical CPU cores
@@ -27,7 +27,7 @@
 
 # Auto Install
 ```
-wget -O nibi https://raw.githubusercontent.com/elangrr/testnet_guide/main/nibiru/nibi && chmod +x nibi && ./nibi
+soon
 ```
 
 After completing Auto install 
