@@ -24,6 +24,7 @@
 - At least 100mbps network bandwidth
 
 # Humans Node Guide (Custom Port 13)  
+# [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/humans/manual_install.md)
 # Auto Install
 ```
 wget -O hum https://raw.githubusercontent.com/elangrr/testnet_guide/main/humans/hum.sh && chmod +x hum && ./hum
