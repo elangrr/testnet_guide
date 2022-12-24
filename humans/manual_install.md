@@ -198,7 +198,7 @@ To check if your node is synced simply run
 
 ```
 humansd tx staking create-validator \
-  --amount 2000000ufetf \
+  --amount 10000000uheart \
   --from wallet \
   --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
