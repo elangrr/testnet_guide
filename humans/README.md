@@ -23,7 +23,7 @@
 - At least 8GB of memory (RAM)
 - At least 100mbps network bandwidth
 
-  
+# Humans Node Guide (Custom Port 13)  
 # Auto Install
 ```
 wget -O hum https://raw.githubusercontent.com/elangrr/testnet_guide/main/humans/hum.sh && chmod +x hum && ./hum
