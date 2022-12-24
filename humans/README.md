@@ -15,7 +15,7 @@
 ### [Humans Ai Official Discord](https://discord.gg/humansdotai)
 
 # Explorer
-### [Indonode Explorer](https://explorer.indonode.dev/humans)
+### [Indonode Explorer](https://explorer.indonode.dev/testnet-1/staking)
 
 ## Minimum Requirements 
 - 4 or more physical CPU cores
