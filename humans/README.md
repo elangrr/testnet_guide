@@ -15,7 +15,7 @@
 ### [Humans Ai Official Discord](https://discord.gg/humansdotai)
 
 # Explorer
-### [KJ Explorer](https://explorer.kjnodes.com/defund/staking)
+### [Indonode Explorer](https://explorer.indonode.dev/humans)
 
 ## Minimum Requirements 
 - 4 or more physical CPU cores
