@@ -27,7 +27,7 @@
 # [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/humans/manual_install.md)
 # Auto Install
 ```
-wget -O hum https://raw.githubusercontent.com/elangrr/testnet_guide/main/humans/hum.sh && chmod +x hum && ./hum
+wget -O hum.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/humans/hum.sh && chmod +x hum.sh && ./hum.sh
 ```
 
 After install node run 
