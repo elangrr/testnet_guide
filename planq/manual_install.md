@@ -192,15 +192,22 @@ Creating validator with `10 Planq` change the value as you like
 
 ```
 planqd tx staking create-validator \
-  --amount 10000000aplanq \
+  --amount 10000000000000000000aplanq \
   --from wallet \
   --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
   --commission-rate "0.07" \
-  --min-self-delegation "1" \
-  --pubkey  $(planqd tendermint show-validator) \
+  --min-self-delegation "1000000" \
+  --pubkey $(planqd tendermint show-validator) \
   --moniker $MONIKER \
-  --chain-id planq_7070-2
+  --chain-id planq_7070-2 \
+  --identity=  \
+  --website="" \
+  --details=" " \
+  --gas="1000000" \
+  --gas-prices="30000000000aplanq" \
+  --gas-adjustment="1.15" \
+  -y
 ```
 
 ## Usefull commands
