@@ -24,7 +24,7 @@
 - At least 120mbps network bandwidth
 
 # Planq Mainnet Node Guide (Custom Port 14)  
-# [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/planq)
+# [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/planq/manual_install.md)
 # Auto Install
 ```
 SOON
