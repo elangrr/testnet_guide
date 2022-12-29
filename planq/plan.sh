@@ -145,7 +145,14 @@ function state_sync {
 }
 
 function sync_snapshot {
-   echo " SOON... "
+sudo systemctl stop planqd
+cp $HOME/.planqd/data/priv_validator_state.json $HOME/.planqd/priv_validator_state.json.backup
+rm -rf $HOME/.planqd/data
+
+curl -L https://snapshot.planq.indonode.net/planq-snapshot-2022-12-29.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.planqd
+mv $HOME/.planqd/priv_validator_state.json.backup $HOME/.planqd/data/priv_validator_state.json
+
+sudo systemctl start planqd && journalctl -u planqd -f --no-hostname -o cat
 
 }
 
@@ -245,8 +252,8 @@ function main {
         "Install Planq Node Port 14"
         "Check Logs"
         "Create wallet"
-        "Sync Via State-sync "
-        "Sync Via Snapshot"
+        "Sync Via State-sync (X) "
+        "Sync Via Snapshot   (✓) "
         "Delete Node"
         "Exit"
     )
