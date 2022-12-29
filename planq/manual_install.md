@@ -194,7 +194,7 @@ sudo systemctl start planqd && journalctl -u planqd -f --no-hostname -o cat
 After your node is synced, create validator
 
 To check if your node is synced simply run
-`curl http://localhost:13657/status sync_info "catching_up": false`
+`curl http://localhost:14657/status sync_info "catching_up": false`
 
 Creating validator with `10 Planq` change the value as you like
 
