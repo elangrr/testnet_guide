@@ -177,10 +177,17 @@ To see current keys
 planqd keys list
 ```
 
-### State-Sync (OPTIONAL)
-Sync your node in minutes
+### Snapshot
+Blocks `610000`
 ```
-SOON
+sudo systemctl stop planqd
+cp $HOME/.planqd/data/priv_validator_state.json $HOME/.planqd/priv_validator_state.json.backup
+rm -rf $HOME/.planqd/data
+
+curl -L https://snapshot.planq.indonode.net/planq-snapshot-2022-12-29.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.planqd
+mv $HOME/.planqd/priv_validator_state.json.backup $HOME/.planqd/data/priv_validator_state.json
+
+sudo systemctl start planqd && journalctl -u planqd -f --no-hostname -o cat
 ```
 
 ### Create validator
