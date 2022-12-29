@@ -89,6 +89,7 @@ EOF
    # Download genesis and addrbook
    wget https://raw.githubusercontent.com/planq-network/networks/main/mainnet/genesis.json
    mv genesis.json ~/.planqd/config/
+   wget -O $HOME/.planqd/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/planq/addrbook.json"
 
 
    # Add seeds
