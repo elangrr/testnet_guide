@@ -20,7 +20,7 @@
 ## Minimum Requirements 
 - 4 or more physical CPU cores
 - At least 500GB of SSD disk storage
-- At least 8GB of memory (RAM)
+- At least 16GB of memory (RAM)
 - At least 120mbps network bandwidth
 
 
