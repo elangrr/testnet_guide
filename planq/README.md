@@ -27,7 +27,7 @@
 # [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/planq/manual_install.md)
 # Auto Install
 ```
-SOON
+wget -O plan.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/planq/plan.sh && chmod +x plan.sh && ./plan.sh
 ```
 
 After install node run 
