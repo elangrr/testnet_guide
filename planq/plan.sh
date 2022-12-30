@@ -99,7 +99,7 @@ PEERS=""
    
    # Set minimum gas price and timeout commit and peers
    sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.025aplanq\"|" $HOME/.planqd/config/app.toml
-   sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"1s\"/" $HOME/.planqd/config/config.toml
+   sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"5s\"/" $HOME/.planqd/config/config.toml
    sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 120/g' $HOME/.planqd/config/config.toml
    sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 60/g' $HOME/.planqd/config/config.toml
 	
