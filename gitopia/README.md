@@ -26,6 +26,20 @@
 
 # Gitopia Mainnet Node Guide (Custom Port 16)  
 # [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/gitopia/manual_install.md)
+
+
+### Download Git Remote Gitopia
+```
+curl https://get.gitopia.com | bash
+``` 
+
+`If you are facing an error saying` : `mv: rename ./git-remote-gitopia to /usr/local/bin/git-remote-gitopia: Permission denied ============ Error: mv failed`
+
+Run this command 
+```
+sudo mv /tmp/tmpinstalldir/git-remote-gitopia /usr/local/bin/
+``` 
+
 # Auto Install
 ```
 soon
