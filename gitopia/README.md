@@ -42,7 +42,7 @@ sudo mv /tmp/tmpinstalldir/git-remote-gitopia /usr/local/bin/
 
 # Auto Install
 ```
-soon
+wget -O git.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/gitopia/git.sh && chmod +x git.sh && ./git.sh
 ```
 
 After install node run 
