@@ -109,7 +109,8 @@ gitopiad init $MONIKER --chain-id gitopia-janus-testnet-2
 
 ### Download genesis file and addrbook
 ```
-
+curl -Ls https://snapshots.kjnodes.com/gitopia-testnet/genesis.json > $HOME/.gitopia/config/genesis.json
+wget -O $HOME/.gitopia/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/gitopia/addrbook.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
