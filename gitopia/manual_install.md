@@ -116,8 +116,8 @@ gitopiad init $MONIKER --chain-id gitopia-janus-testnet-2
 ```
 SEEDS="3f472746f46493309650e5a033076689996c8881@gitopia-testnet.rpc.kjnodes.com:41659,399d4e19186577b04c23296c4f7ecc53e61080cb@seed.gitopia.com:26656" 
 PEERS=""
-sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.gitopiad/config/config.toml
-sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.001utlore\"|" $HOME/.gitopiad/config/app.toml
+sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.gitopia/config/config.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.001utlore\"|" $HOME/.gitopia/config/app.toml
 ```
 
 ### Pruning (Optional)
@@ -126,22 +126,22 @@ pruning="custom"
 pruning_keep_recent="100"
 pruning_keep_every="0"
 pruning_interval="19"
-sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.gitopiad/config/app.toml
-sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.gitopiad/config/app.toml
-sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.gitopiad/config/app.toml
-sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.gitopiad/config/app.toml
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.gitopia/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.gitopia/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.gitopia/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.gitopia/config/app.toml
 ```
 
 ### Indexer (Optional)
 ```
 indexer="null" && \
-sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.gitopiad/config/config.toml
+sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.gitopia/config/config.toml
 ```
 
 ### Custom Port 
 ```
-sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:16658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:16657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:16060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:16656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \"16660\"%" $HOME/.gitopiad/config/config.toml
-sed -i.bak -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:1617\"%; s%^address = \":8080\"%address = \":1680\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:1690\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:1691\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:1645\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:1646\"%" $HOME/.gitopiad/config/app.toml
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:16658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:16657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:16060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:16656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \"16660\"%" $HOME/.gitopia/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:1617\"%; s%^address = \":8080\"%address = \":1680\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:1690\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:1691\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:1645\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:1646\"%" $HOME/.gitopia/config/app.toml
 ```
 
 ### Create service file and start the node
@@ -166,6 +166,13 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable gitopiad
 ```
+
+Create Synlinks
+```
+ln -s $HOME/.gitopia/cosmovisor/genesis $HOME/.gitopia/cosmovisor/current
+sudo ln -s $HOME/.gitopia/cosmovisor/current/bin/gitopiad /usr/local/bin/gitopiad
+```
+
 Start Cosmovisor
 ```
 sudo systemctl restart gitopiad && sudo journalctl -u gitopiad -f -o cat
@@ -360,7 +367,7 @@ sudo systemctl disable gitopiad && \
 rm /etc/systemd/system/gitopiad.service && \
 sudo systemctl daemon-reload && \
 cd $HOME && \
-rm -rf .gitopiad && \
+rm -rf .gitopia && \
 rm -rf $(which gitopiad)
 ```
 
