@@ -24,7 +24,7 @@
 - At least 120mbps network bandwidth
 
 
-# Gitopia Mainnet Node Guide (Custom Port 16)  
+# Gitopia Testnet Node Guide (Custom Port 16)  
 # [Manual Install](https://github.com/elangrr/testnet_guide/blob/main/gitopia/manual_install.md)
 
 
