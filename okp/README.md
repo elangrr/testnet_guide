@@ -169,24 +169,14 @@ Change `<wallet>` and `<moniker>`
 
 ### Snapshot (Nodejumper)
 ```
-sudo apt update
-sudo apt install lz4 -y
-
 sudo systemctl stop okp4d
-
 cp $HOME/.okp4d/data/priv_validator_state.json $HOME/.okp4d/priv_validator_state.json.backup
-okp4d tendermint unsafe-reset-all --home $HOME/.okp4d --keep-addr-book
+rm -rf $HOME/.okp4d/data
 
-rm -rf $HOME/.okp4d/data 
-rm -rf $HOME/.okp4d/wasm
-
-SNAP_NAME=$(curl -s https://snapshots2-testnet.nodejumper.io/okp4-testnet/ | egrep -o ">okp4-nemeton.*\.tar.lz4" | tr -d ">")
-curl https://snapshots2-testnet.nodejumper.io/okp4-testnet/${SNAP_NAME} | lz4 -dc - | tar -xf - -C $HOME/.okp4d
-
+curl -L https://snapshot.okp4.indonode.net/okp4-snapshot-2023-01-03.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.okp4d
 mv $HOME/.okp4d/priv_validator_state.json.backup $HOME/.okp4d/data/priv_validator_state.json
 
-sudo systemctl restart okp4d
-sudo journalctl -u okp4d -f --no-hostname -o cat
+sudo systemctl restart okp4d && journalctl -u okp4d -f --no-hostname -o cat
 ```
 
 ## Usefull commands
