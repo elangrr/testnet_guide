@@ -93,15 +93,13 @@ EOF
 
 
    # Add seeds
-SEEDS="dd2f0ceaa0b21491ecae17413b242d69916550ae@135.125.247.70:26656,0525de7e7640008d2a2e01d1a7f6456f28f3324c@51.79.142.6:26656,21432722b67540f6b366806dff295849738d7865@139.99.223.241:26656" 
-PEERS=""
-   sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.planqd/config/config.toml
+seeds=`curl -sL https://raw.githubusercontent.com/planq-network/networks/main/mainnet/seeds.txt | awk '{print $1}' | paste -s -d, -`
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" ~/.planqd/config/config.toml
+sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 100/g' $HOME/.planqd/config/config.toml
+sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 100/g' $HOME/.planqd/config/config.toml
    
    # Set minimum gas price and timeout commit and peers
    sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.025aplanq\"|" $HOME/.planqd/config/app.toml
-   sed -i -e "s/^timeout_commit *=.*/timeout_commit = \"5s\"/" $HOME/.planqd/config/config.toml
-   sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 120/g' $HOME/.planqd/config/config.toml
-   sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 60/g' $HOME/.planqd/config/config.toml
 	
    # Set Indexer Null
    indexer="null" && \
@@ -111,7 +109,7 @@ PEERS=""
    sed -i -e "s|^pruning *=.*|pruning = \"custom\"|" $HOME/.planqd/config/app.toml
    sed -i -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"100\"|" $HOME/.planqd/config/app.toml
    sed -i -e "s|^pruning-keep-every *=.*|pruning-keep-every = \"0\"|" $HOME/.planqd/config/app.toml
-   sed -i -e "s|^pruning-interval *=.*|pruning-interval = \"10\"|" $HOME/.planqd/config/app.toml
+   sed -i -e "s|^pruning-interval *=.*|pruning-interval = \"19\"|" $HOME/.planqd/config/app.toml
 
    # Set custom ports
    sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:14658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:14657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:14060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:14656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":14660\"%" $HOME/.planqd/config/config.toml
@@ -149,7 +147,7 @@ sudo systemctl stop planqd
 cp $HOME/.planqd/data/priv_validator_state.json $HOME/.planqd/priv_validator_state.json.backup
 rm -rf $HOME/.planqd/data
 
-curl -L https://snapshot.planq.indonode.net/planq-snapshot-2022-12-31.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.planqd
+curl -L https://snapshot.planq.indonode.net/planq-snapshot-2023-01-04.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.planqd
 mv $HOME/.planqd/priv_validator_state.json.backup $HOME/.planqd/data/priv_validator_state.json
 
 sudo systemctl restart planqd && journalctl -u planqd -f --no-hostname -o cat
