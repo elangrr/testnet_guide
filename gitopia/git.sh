@@ -43,7 +43,7 @@ function install_node {
 	git checkout v1.2.0
 	make build
 	mkdir -p $HOME/.gitopia/cosmovisor/genesis/bin
-	mv build/gitopiad $HOME/.gitopia/cosmovisor/genesis/bin/
+	sudo mv build/gitopiad $HOME/.gitopia/cosmovisor/genesis/bin/
 	rm -rf build
     
     echo "Install and building Cosmovisor..."
@@ -74,7 +74,7 @@ sudo systemctl enable gitopiad
     
 
     # Create application symlinks
-	ln -s $HOME/.gitopia/cosmovisor/genesis $HOME/.gitopia/cosmovisor/current
+	sudo ln -s $HOME/.gitopia/cosmovisor/genesis $HOME/.gitopia/cosmovisor/current
 	sudo ln -s $HOME/.gitopia/cosmovisor/current/bin/gitopiad /usr/local/bin/gitopiad
     
     echo "Configuring Node..."
