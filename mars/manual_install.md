@@ -95,7 +95,8 @@ marsd init $MONIKER --chain-id ares-1
 
 ### Download genesis file and addrbook
 ```
-
+wget -O $HOME/.mars/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/addrbook.json"
+wget -O $HOME/.mars/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/genesis.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
