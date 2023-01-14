@@ -19,7 +19,7 @@
 ### [Mars Official Discord](https://discord.gg/marsprotocol)
 
 # Explorer
-### [Explorer](https://explorer.planq.network/ares-1/staking)
+### [Explorer](https://explorer.indonode.dev/mars/staking)
 
 ## Minimum Requirements 
 - 4 or more physical CPU cores
