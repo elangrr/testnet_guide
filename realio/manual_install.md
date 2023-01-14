@@ -96,8 +96,8 @@ realio-networkd init $MONIKER --chain-id realionetwork_1110-2
 
 ### Download genesis file and addrbook
 ```
-wget -O $HOME/.realio-network/config/addrbook.json ""
-wget -O $HOME/.realio-network/config/genesis.json ""
+wget -O $HOME/.realio-network/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/realio/addrbook.json"
+wget -O $HOME/.realio-network/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/realio/genesis.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
