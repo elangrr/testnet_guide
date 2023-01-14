@@ -153,7 +153,7 @@ Description=gitopia-testnet node service
 After=network-online.target
 [Service]
 User=$USER
-ExecStart=/usr/bin/cosmovisor run start
+ExecStart=$(which cosmovisor) run start
 Restart=on-failure
 RestartSec=10
 LimitNOFILE=65535
