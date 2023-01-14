@@ -193,7 +193,14 @@ sudo apt update
 sudo apt install snapd -y
 sudo snap install lz4
    
+sudo systemctl stop realio-networkd
+	cp $HOME/.realio-network/data/priv_validator_state.json $HOME/.realio-network/priv_validator_state.json.backup
+	rm -rf $HOME/.realio-network/data
 
+	curl -L https://snapshot.realio-network.indonode.net/realio-snapshot-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.realio-network
+	mv $HOME/.realio-network/priv_validator_state.json.backup $HOME/.realio-network/data/priv_validator_state.json
+
+	sudo systemctl restart realio-networkd && journalctl -u realio-networkd -f --no-hostname -o cat
 ```
 
 ### Faucet
