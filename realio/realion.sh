@@ -150,7 +150,7 @@ function sync_snapshot {
 	cp $HOME/.realio-network/data/priv_validator_state.json $HOME/.realio-network/priv_validator_state.json.backup
 	rm -rf $HOME/.realio-network/data
 
-	curl -L http://snapshot.realio-network.indonode.net/snapshot-mars-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.realio-network
+	curl -L http://snapshot.realio-network.indonode.net/snapshot-realio-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.realio-network
 	mv $HOME/.realio-network/priv_validator_state.json.backup $HOME/.realio-network/data/priv_validator_state.json
 
 	sudo systemctl restart realio-networkd && journalctl -u realio-networkd -f --no-hostname -o cat
