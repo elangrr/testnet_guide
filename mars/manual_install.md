@@ -197,7 +197,7 @@ sudo systemctl stop marsd
 cp $HOME/.mars/data/priv_validator_state.json $HOME/.mars/priv_validator_state.json.backup
 rm -rf $HOME/.mars/data
 
-curl -L http://snapshot.mars.indonode.net/snapshot-mars-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
+curl -L https://snapshot.mars.indonode.net/snapshot-mars-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
 mv $HOME/.mars/priv_validator_state.json.backup $HOME/.mars/data/priv_validator_state.json
 
 sudo systemctl restart marsd && journalctl -u marsd -f --no-hostname -o cat
