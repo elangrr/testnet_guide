@@ -35,7 +35,7 @@
 
 # Auto Install
 ```
-wget -O https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/mar.sh && chmod +x mar.sh && ./mar.sh
+wget -O mar.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/mar.sh && chmod +x mar.sh && ./mar.sh
 ```
 
 After install node run 
