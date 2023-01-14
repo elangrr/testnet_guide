@@ -7,7 +7,7 @@ DEFAULT="\e[39m"
 
 function install_node {
    echo "*********************"
-   echo -e "\e[1m\e[33m	WARNING!!!! THIS NODE IS INSTALLED IN PORT 13657!!!!\e[0m"
+   echo -e "\e[1m\e[33m	WARNING!!!! THIS NODE IS INSTALLED IN PORT 20657!!!!\e[0m"
    echo "*********************"
    echo -e "\e[1m\e[32m	Enter your Node Name:\e[0m"
    echo "_|-_|-_|-_|-_|-_|-_|"
