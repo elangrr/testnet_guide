@@ -33,7 +33,7 @@
 
 # Auto Install
 ```
-wget -O https://raw.githubusercontent.com/elangrr/testnet_guide/main/realio/realion.sh && chmod +x realion.sh && ./realion.sh
+wget -O realion.sh https://raw.githubusercontent.com/elangrr/testnet_guide/main/realio/realion.sh && chmod +x realion.sh && ./realion.sh
 ```
 
 After install node run 
