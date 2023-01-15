@@ -189,7 +189,7 @@ To see current keys
 terpd keys list
 ```
 
-### Snapshot (SOON)
+### Snapshot
 ```
 sudo apt update
 sudo apt install snapd -y
