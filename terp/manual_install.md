@@ -97,8 +97,8 @@ go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.4.0
   
 ### Download genesis file and addrbook
 ```
-wget -O $HOME/.terp/config/addrbook.json ""
-wget -O $HOME/.terp/config/genesis.json ""
+wget -O $HOME/.terp/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/terp/addrbook.json"
+wget -O $HOME/.terp/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/terp/genesis.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
