@@ -12,11 +12,11 @@
 
 
 # Official Links
-### [Official Document](https://github.com/defund-labs/testnet/tree/main/defund-private-2)
+### [Official Document](https://github.com/defund-labs/testnet/)
 ### [Defund Official Discord](https://discord.gg/Rx2gdHmsRn)
 
 # Explorer
-### [KJ Explorer](https://explorer.kjnodes.com/defund/staking)
+### [Indonode Explorer](https://explorer.indonode.dev/defund/staking)
 
 ## Minimum Requirements 
 - 4 or more physical CPU cores
@@ -24,26 +24,15 @@
 - At least 8GB of memory (RAM)
 - At least 100mbps network bandwidth
 
-# Auto Install
-```
-wget -O def https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/def && chmod +x def && ./def
-```
-After Using Auto install run 
-```
-source ~/.bash_profile
-```
-After This , Proceed to `Create Wallet`
-
-# Manual Install Node Guide
+# Manual Install Defund Node Guide with custom port 19
 
 ### Set vars
 ```
-Nodename=$Nodename
+MONIKER=$MONIKER
 ```
-Change `$Nodename` to your moniker
+Change `$MONIKER` to your moniker
 ```
-echo export Nodename=${Nodename} >> $HOME/.bash_profile
-echo export CHAIN_ID="defund-private-3" >> $HOME/.bash_profile
+echo export MONIKER=${MONIKER} >> $HOME/.bash_profile
 source ~/.bash_profile
 ```
 
@@ -59,7 +48,7 @@ sudo apt install curl tar wget tmux htop net-tools clang pkg-config libssl-dev j
 
 ### Install GO
 ```
-ver="1.19" && \
+ver="1.19.4" && \
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
 sudo rm -rf /usr/local/go && \
 sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
@@ -69,40 +58,54 @@ source $HOME/.bash_profile && \
 go version
 ```
 
-### Download binaries
+### Download & build binary
 ```
-cd $HOME && rm -rf defund
+cd $HOME
+rm -rf defund
 git clone https://github.com/defund-labs/defund.git
 cd defund
-git checkout v0.1.0
-make install
+git checkout v0.2.2
+make build
+
+mkdir -p $HOME/.defund/cosmovisor/genesis/bin
+mv build/defundd $HOME/.defund/cosmovisor/genesis/bin/
+rm -rf build
+```
+
+### Create Symlinks
+```
+sudo ln -s $HOME/.defund/cosmovisor/genesis $HOME/.defund/cosmovisor/current
+sudo ln -s $HOME/.defund/cosmovisor/current/bin/defundd /usr/local/bin/defundd
 ```
 
 ### Config
 ```
-defundd config chain-id $CHAIN_ID
+defundd config chain-id defund-private-4
 defundd config keyring-backend test
+defundd config node tcp://localhost:19657
 ```
 
 ### Init 
 ```
-defundd init $Nodename --chain-id $CHAIN_ID
+defundd init $MONIKER --chain-id defund-private-4
 ```
-Change `$Nodename` to your moniker
+Change `$MONIKER` to your moniker
 
+### Download Cosmovisor
+```
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.4.0
+```
 
 ### Download genesis file and addrbook
 ```
-wget https://github.com/defund-labs/testnet/raw/main/defund-private-3/defund-private-3-gensis.tar.gz
-tar -xvzf defund-private-3-gensis.tar.gz
-mv genesis.json $HOME/.defund/config/
 wget -O $HOME/.defund/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/addrbook.json"
+wget -O $HOME/.defund/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/defund/genesis.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
 ```
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ufetf\"/" $HOME/.defund/config/app.toml
-SEEDS="85279852bd306c385402185e0125dffeed36bf22@38.146.3.194:26656,09ce2d3fc0fdc9d1e879888e7d72ae0fefef6e3d@65.108.105.48:11256"
+SEEDS="3f472746f46493309650e5a033076689996c8881@defund-testnet.rpc.kjnodes.com:40659"
 PEERS=""
 sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.defund/config/config.toml
 ```
@@ -112,7 +115,7 @@ sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persisten
 pruning="custom"
 pruning_keep_recent="100"
 pruning_keep_every="0"
-pruning_interval="50"
+pruning_interval="19"
 sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.defund/config/app.toml
 sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.defund/config/app.toml
 sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.defund/config/app.toml
@@ -125,19 +128,28 @@ indexer="null" && \
 sed -i -e "s/^indexer *=.*/indexer = \"$indexer\"/" $HOME/.defund/config/config.toml
 ```
 
+### Custom Port 19
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:19658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:19657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:19060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:19656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":19660\"%" $HOME/.defund/config/config.toml
+sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:19317\"%; s%^address = \":8080\"%address = \":19080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:19090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:19091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:19545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:19546\"%" $HOME/.defund/config/app.toml
+```
+
 ### Create service file and start the node
 ```
-sudo tee /etc/systemd/system/defundd.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/defundd.service > /dev/null << EOF
 [Unit]
-Description=fetf
+Description=defund-testnet node service
 After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which defundd) start --home $HOME/.defund
+ExecStart=$(which cosmovisor) run start
 Restart=on-failure
-RestartSec=3
+RestartSec=10
 LimitNOFILE=65535
+Environment="DAEMON_HOME=$HOME/.defund"
+Environment="DAEMON_NAME=defundd"
+Environment="UNSAFE_SKIP_BACKUP=true"
 
 [Install]
 WantedBy=multi-user.target
@@ -145,7 +157,6 @@ EOF
 
 sudo systemctl daemon-reload
 sudo systemctl enable defundd
-sudo systemctl restart defundd && sudo journalctl -u defundd -f -o cat
 ```
 
 ### Create wallet
@@ -166,27 +177,9 @@ To see current keys
 defundd keys list
 ```
 
-### State-Sync (OPTIONAL)
+### State-Sync (Not Supported)
 Sync your node in minutes
 ```
-peers="5e7853ec4f74dba1d3ae721ff9f50926107efc38@65.108.6.45:60556"
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.defund/config/config.toml
-
-SNAP_RPC=https://t-defund.rpc.utsa.tech:443
-
-LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
-TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
-
-echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
-
-sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
-s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
-s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
-s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ; \
-s|^(seeds[[:space:]]+=[[:space:]]+).*$|\1\"\"|" $HOME/.defund/config/config.toml
-
-sudo systemctl restart defundd && sudo journalctl -u defundd -f -o cat
 ```
 
 ### Ask for faucet in Discord
@@ -195,19 +188,26 @@ sudo systemctl restart defundd && sudo journalctl -u defundd -f -o cat
 After your node is synced, create validator
 
 To check if your node is synced simply run
-`curl http://localhost:26657/status sync_info "catching_up": false`
+`curl http://localhost:19657/status sync_info "catching_up": false`
 
 ```
 defundd tx staking create-validator \
-  --amount 2000000ufetf \
-  --from wallet \
-  --commission-max-change-rate "0.01" \
-  --commission-max-rate "0.2" \
-  --commission-rate "0.07" \
-  --min-self-delegation "1" \
-  --pubkey  $(defundd tendermint show-validator) \
-  --moniker $Nodename \
-  --chain-id $CHAIN_ID
+--amount=1000000ufetf \
+--pubkey=$(defundd tendermint show-validator) \
+--moniker="$MONIKER" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=defund-private-4 \
+--commission-rate=0.1 \
+--commission-max-rate=0.20 \
+--commission-max-change-rate=0.01 \
+--min-self-delegation=1 \
+--from=wallet \
+--gas-adjustment=1.4 \
+--gas=auto \
+--gas-prices=0ufetf \
+-y
 ```
 
 ## Usefull commands
@@ -253,6 +253,16 @@ Show node id
 defundd tendermint show-node-id
 ```
 
+Get Node Peer
+```
+echo $(defundd tendermint show-node-id)'@'$(curl -s ifconfig.me)':'$(cat $HOME/.defund/config/config.toml | sed -n '/Address to listen for incoming connection/{n;p;}' | sed 's/.*://; s/".*//')
+```
+
+Get Live Peer
+```
+curl -sS http://localhost:19657/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}'
+```
+
 ### Wallet operations
 List of wallets
 ```
@@ -281,39 +291,44 @@ defundd tx bank send <FROM ADDRESS> <TO_defund_WALLET_ADDRESS> 10000000ufetf
 
 ### Voting
 ```
-defundd tx gov vote 1 yes --from wallet --chain-id=$CHAIN_ID
+defundd tx gov vote 1 yes --from wallet --chain-id=defund-private-4
 ```
 
 ### Staking, Delegation and Rewards
+Delegate Stake to your own validator
+```
+defundd tx staking delegate $(defundd keys show wallet --bech val -a) 1000000ufetf --from wallet --chain-id defund-private-4 --gas-adjustment 1.4 --gas auto --gas-prices 0.001ufetf -y
+```
+
 Delegate stake
 ```
-defundd tx staking delegate <defund valoper> 10000000ufetf --from=wallet --chain-id=$CHAIN_ID --gas=auto
+defundd tx staking delegate <defund valoper> 10000000ufetf --from=wallet --chain-id=defund-private-4 --gas=auto
 ```
 
 Redelegate stake from validator to another validator
 ```
-defundd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000ufetf --from=wallet --chain-id=$CHAIN_ID --gas=auto
+defundd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000ufetf --from=wallet --chain-id=defund-private-4 --gas=auto
 ```
 
 Withdraw all rewards
 ```
-defundd tx distribution withdraw-all-rewards --from=wallet --chain-id=$CHAIN_ID --gas=auto
+defundd tx distribution withdraw-all-rewards --from=wallet --chain-id=defund-private-4 --gas=auto
 ```
 
 Withdraw rewards with commision
 ```
-defundd tx distribution withdraw-rewards <defund valoper> --from=wallet --commission --chain-id=$CHAIN_ID
+defundd tx distribution withdraw-rewards <defund valoper> --from=wallet --commission --chain-id=defund-private-4
 ```
 
 ### Validator management
 Edit validator
 ```
 defundd tx staking edit-validator \
-  --moniker=$Nodename \
+  --moniker=$MONIKER \
   --identity=<your_keybase_id> \
   --website="<your_website>" \
   --details="<your_validator_description>" \
-  --chain-id=$CHAIN_ID \
+  --chain-id=defund-private-4 \
   --from=wallet
 ```
 
@@ -322,7 +337,7 @@ Unjail validator
 defundd tx slashing unjail \
   --broadcast-mode=block \
   --from=wallet \
-  --chain-id=$CHAIN_ID \
+  --chain-id=defund-private-4 \
   --gas=auto
 ```
 
@@ -335,11 +350,8 @@ sudo systemctl daemon-reload && \
 cd $HOME && \
 rm -rf .defund && \
 rm -rf $(which defundd)
+rm -rf defund
 ```
-
-
-
-
 
 
 
