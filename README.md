@@ -19,3 +19,4 @@ List of Cosmos ecosystem projets with custom ports configured:
 | Gitopia      | 16          | [click here](./gitopia/README.md)     | [click here](./gitopia/manual_install.md)     |
 | Realio       | 18          | [click here](./realio/README.md)      | [click here](./realio/manual_install.md)      |
 | Mars         | 20          | [click here](./mars/README.md)        | [click here](./mars/manual_install.md)        |
+| Terp         | 32          | [click here](./terp/README.md)        | [click here](./terp/manual_install.md)        |
