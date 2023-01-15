@@ -177,9 +177,17 @@ To see current keys
 defundd keys list
 ```
 
-### State-Sync (Not Supported)
+### Snapshot (800MB)
 Sync your node in minutes
 ```
+ sudo systemctl stop defundd
+	cp $HOME/.defund/data/priv_validator_state.json $HOME/.defund/priv_validator_state.json.backup
+	rm -rf $HOME/.defund/data
+
+	curl -L https://snapshot.defund.indonode.net/defund-snapshot-2023-01-15.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.defund
+	mv $HOME/.defund/priv_validator_state.json.backup $HOME/.defund/data/priv_validator_state.json
+
+	sudo systemctl restart defundd && journalctl -u defundd -f --no-hostname -o cat
 ```
 
 ### Ask for faucet in Discord
