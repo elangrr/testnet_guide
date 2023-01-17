@@ -184,7 +184,7 @@ planqd keys list
 ```
 
 ### Snapshot
-Blocks `610000`
+Blocks `887500
 ```
 sudo systemctl stop planqd
 cp $HOME/.planqd/data/priv_validator_state.json $HOME/.planqd/priv_validator_state.json.backup
