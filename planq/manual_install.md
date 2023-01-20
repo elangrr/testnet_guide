@@ -75,6 +75,13 @@ make build
 mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
 mkdir -p ~/.planqd/cosmovisor/upgrades
 cp build/planqd ~/.planqd/cosmovisor/genesis/bin
+rm -rf build
+```
+
+### Create a Symlink
+```
+sudo ln -s $HOME/.planqd/cosmovisor/genesis $HOME/.planqd/cosmovisor/current
+sudo ln -s $HOME/.planqd/cosmovisor/current/bin/planqd /usr/local/bin/planqd
 ```
 
 ### Download Cosmovisor
