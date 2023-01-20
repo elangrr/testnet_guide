@@ -22,16 +22,10 @@ function install_node {
     sudo apt install curl tar wget tmux htop net-tools clang pkg-config libssl-dev jq build-essential git make ncdu -y
     
     echo "Installing GO..."
-   if ! [ -x "$(command -v go)" ]; then
-     ver="1.19"
-     cd $HOME
-     wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
-     sudo rm -rf /usr/local/go
-     sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
-     rm "go$ver.linux-amd64.tar.gz"
-     echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
-     source ~/.bash_profile
-   fi
+	sudo rm -rf /usr/local/go
+	curl -Ls https://go.dev/dl/go1.19.5.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local
+	eval $(echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/golang.sh)
+	eval $(echo 'export PATH=$PATH:$HOME/go/bin' | tee -a $HOME/.profile)
     
     echo "Downloading and building binaries..."
     cd $HOME
