@@ -74,7 +74,7 @@ git checkout v1.0.3
 make build
 mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
 mkdir -p ~/.planqd/cosmovisor/upgrades
-cp /build/planqd ~/.planqd/cosmovisor/genesis/bin
+cp build/planqd ~/.planqd/cosmovisor/genesis/bin
 ```
 
 ### Download Cosmovisor
