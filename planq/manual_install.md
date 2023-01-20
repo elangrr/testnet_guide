@@ -71,7 +71,7 @@ git fetch
 Build Binaries
 ```
 git checkout v1.0.2
-make install
+make build
 mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
 mkdir -p ~/.planqd/cosmovisor/upgrades
 cp ~/go/bin/planqd ~/.planqd/cosmovisor/genesis/bin
