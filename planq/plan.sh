@@ -41,8 +41,8 @@ function install_node {
     git fetch
  
     echo "Build binaries.."
-    git checkout v1.0.2
-    make install
+    git checkout v1.0.3
+    make build
 	mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
 	mkdir -p ~/.planqd/cosmovisor/upgrades
 	cp ~/go/bin/planqd ~/.planqd/cosmovisor/genesis/bin
