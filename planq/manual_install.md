@@ -64,7 +64,7 @@ git fetch
 ```
 Build Binaries
 ```
-git checkout v1.0.2
+git checkout v1.0.3
 make build
 mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
 mkdir -p ~/.planqd/cosmovisor/upgrades
