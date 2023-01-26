@@ -424,7 +424,18 @@ If your address wont show , sometimes it takes a little while just be patient!
 If your address already showed , Congratulatons ! You are already Relayer Operator!
 
 ### Commands 
-
+Check Wallet Address
+```
+hermes keys list --chain <CHAIN_ID>
+```
+Check Wallet Balances
+```
+hermes keys balance --chain <CHAIN_ID>
+```
+Delete Wallet
+```
+hermes keys delete --chain <CHAIN_ID> --key-name <KEY_NAME>
+```
 Check Hermes Health 
 ```
 hermes health-check
