@@ -65,22 +65,7 @@ git fetch
 Build Binaries
 ```
 git checkout v1.0.3
-make build
-mkdir -p $HOME/.planqd/cosmovisor/genesis/bin
-mkdir -p ~/.planqd/cosmovisor/upgrades
-cp build/planqd ~/.planqd/cosmovisor/genesis/bin
-rm -rf build
-```
-
-### Create a Symlink
-```
-sudo ln -s $HOME/.planqd/cosmovisor/genesis $HOME/.planqd/cosmovisor/current
-sudo ln -s $HOME/.planqd/cosmovisor/current/bin/planqd /usr/local/bin/planqd
-```
-
-### Download Cosmovisor
-```
-go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.4.0
+make install
 ```
   
 ### Config
@@ -99,7 +84,7 @@ planqd init $MONIKER --chain-id planq_7070-2
 ```
 wget https://raw.githubusercontent.com/planq-network/networks/main/mainnet/genesis.json
 mv genesis.json ~/.planqd/config/
-wget -O $HOME/.planqd/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/planq/addrbook.json"
+wget -O $HOME/.planqd/config/addrbook.json "https://addrbook.archieve-planq.indonode.net/addrbook.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
@@ -139,20 +124,17 @@ sed -i.bak -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:141
 
 ### Create service file and start the node
 ```
-sudo tee /etc/systemd/system/planqd.service > /dev/null << EOF
+sudo tee /etc/systemd/system/planqd.service > /dev/null <<EOF
 [Unit]
-Description=planq-mainnet node service
+Description=planqd
 After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which cosmovisor) run start
+ExecStart=$(which planqd)
 Restart=on-failure
-RestartSec=10
+RestartSec=3
 LimitNOFILE=65535
-Environment="DAEMON_HOME=$HOME/.planqd"
-Environment="DAEMON_NAME=planqd"
-Environment="UNSAFE_SKIP_BACKUP=true"
 
 [Install]
 WantedBy=multi-user.target
@@ -161,7 +143,7 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable planqd
 ```
-Start Cosmovisor
+Start Planq
 ```
 sudo systemctl restart planqd && sudo journalctl -u planqd -f -o cat
 ```
@@ -185,7 +167,7 @@ planqd keys list
 ```
 
 ### Snapshot
-Daily Snapshot Updated at block `940000` `383MB`
+Daily Snapshot Updated every 12 Hour
 ```
 sudo systemctl stop planqd
 cp $HOME/.planqd/data/priv_validator_state.json $HOME/.planqd/priv_validator_state.json.backup
