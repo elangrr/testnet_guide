@@ -69,7 +69,7 @@ source $HOME/.bash_profile
 
 Please Change the value `xxx` or the RPC Settings , I Have provided other RPC resource you just need to fill it yourself 
 
-### [RPC Relayer Resources]() 
+### [RPC Relayer Resources](https://github.com/elangrr/testnet_guide/blob/main/planq/relayer/relayer_resources.md) 
 ```
 sudo tee $HOME/.hermes/config.toml > /dev/null <<EOF
 [mode]
