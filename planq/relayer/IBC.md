@@ -271,9 +271,6 @@ SUCCESS performed health check for all chains in the config
 
 ### Recover wallet using mnemonic files
 ```
-echo "$MNEMONIC" > $HOME/.hermes.mnemonic
-hermes keys add --chain "$CHAIN_ID" --key-name relayer --hd-path "m/44'/60'/0'/0/0" --mnemonic-file $HOME/.hermes.mnemonic
-rm $HOME/.hermes.mnemonic
 MNEMONIC='word scare connect prison angry jazz help panther museum hope antenna all voyage fame shiver sing life zone era abstract busy bamboo own dune'
 CHAIN_ID=planq_7070-2
 
