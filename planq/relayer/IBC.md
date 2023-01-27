@@ -281,7 +281,8 @@ echo "$MNEMONIC" > $HOME/.hermes.mnemonic
 hermes keys add --chain "$CHAIN_ID" --mnemonic-file $HOME/.hermes.mnemonic
 rm $HOME/.hermes.mnemonic
 ```
-for planq, if the address is different from the one in the keplr wallet, please use this
+### for planq, if the address is different from the one in the keplr wallet, please use this
+```
 echo "$MNEMONIC" > $HOME/.hermes.mnemonic
 hermes keys add --chain "$CHAIN_ID" --key-name relayer --hd-path "m/44'/60'/0'/0/0" --mnemonic-file $HOME/.hermes.mnemonic
 rm $HOME/.hermes.mnemonic
