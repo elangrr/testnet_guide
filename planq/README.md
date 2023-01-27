@@ -131,7 +131,7 @@ After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which planqd)
+ExecStart=$(which planqd) start --home $HOME/.planqd
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=65535
