@@ -61,9 +61,6 @@ To see current keys
 marsd keys list
 ```
 
-### Faucet
-[FAUCET HERE](https://faucet.marsprotocol.io/)
-
 ### Create validator
 After your node is synced, create validator
 
@@ -72,7 +69,7 @@ To check if your node is synced simply run
 
 ```
 marsd tx staking create-validator \
-  --amount 4000000umars \
+  --amount 1000000umars \
   --from wallet \
   --commission-max-change-rate "0.1" \
   --commission-max-rate "0.2" \
@@ -80,7 +77,7 @@ marsd tx staking create-validator \
   --min-self-delegation "1" \
   --pubkey $(marsd tendermint show-validator) \
   --moniker $MONIKER \
-  --chain-id ares-1 \
+  --chain-id mars-1 \
   --identity="" \
   --details="" \
   --website="" -y
@@ -157,28 +154,28 @@ marsd tx bank send <FROM ADDRESS> <TO_mars_WALLET_ADDRESS> 10000000umars
 
 ### Voting
 ```
-marsd tx gov vote 1 yes --from wallet --chain-id=ares-1
+marsd tx gov vote 1 yes --from wallet --chain-id=mars-1
 ```
 
 ### Staking, Delegation and Rewards
 Delegate stake
 ```
-marsd tx staking delegate <mars valoper> 10000000umars --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx staking delegate <mars valoper> 10000000umars --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Redelegate stake from validator to another validator
 ```
-marsd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000umars --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000umars --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Withdraw all rewards
 ```
-marsd tx distribution withdraw-all-rewards --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx distribution withdraw-all-rewards --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Withdraw rewards with commision
 ```
-marsd tx distribution withdraw-rewards <mars valoper> --from=wallet --commission --chain-id=ares-1
+marsd tx distribution withdraw-rewards <mars valoper> --from=wallet --commission --chain-id=mars-1
 ```
 
 ### Validator management
@@ -189,7 +186,7 @@ marsd tx staking edit-validator \
   --identity=<your_keybase_id> \
   --website="<your_website>" \
   --details="<your_validator_description>" \
-  --chain-id=ares-1 \
+  --chain-id=mars-1 \
   --from=wallet
 ```
 
@@ -198,7 +195,7 @@ Unjail validator
 marsd tx slashing unjail \
   --broadcast-mode=block \
   --from=wallet \
-  --chain-id=ares-1 \
+  --chain-id=mars-1 \
   --gas=auto
 ```
 
