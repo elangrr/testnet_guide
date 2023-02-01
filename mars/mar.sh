@@ -38,7 +38,7 @@ function install_node {
 	rm -rf hub
 	git clone https://github.com/mars-protocol/hub.git
 	cd hub
-	git checkout v1.0.0-rc7
+	git checkout v1.0.0
 	
     echo "Build binaries.."
     make build
@@ -76,26 +76,21 @@ EOF
     
     echo "Configuring Node..."
     # Set node configuration
-    marsd config chain-id ares-1
-	marsd config keyring-backend test
+    marsd config chain-id mars-1
+	marsd config keyring-backend file
 	marsd config node tcp://localhost:20657
 
 	# Initialize the node
-	marsd init $MONIKER --chain-id ares-1
+	marsd init $MONIKER --chain-id mars-1
 
 	wget -O $HOME/.mars/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/addrbook.json"
-	wget -O $HOME/.mars/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/genesis.json"
+	wget -O $HOME/.mars/config/addrbook.json "http://service.mars.indonode.net/addrbook.json"
 
 	# Add seeds
-	sed -i -e "s|^seeds *=.*|seeds = \"3f472746f46493309650e5a033076689996c8881@mars-testnet.rpc.kjnodes.com:45659\"|" $HOME/.mars/config/config.toml
-
-	# Set minimum gas price
+	seeds="52de8a7e2ad3da459961f633e50f64bf597c7585@seed.marsprotocol.io:443,d2d2629c8c8a8815f85c58c90f80b94690468c4f@tenderseed.ccvalidators.com:26012"
+	peers=""
+	sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|; s|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.mars/config/config.toml
 	sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0umars\"|" $HOME/.mars/config/app.toml
-
-	sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $HOME/.mars/config/config.toml
-	external_address=$(wget -qO- eth0.me) 
-	sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 50/g' $HOME/.mars/config/config.toml
-	sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 50/g' $HOME/.mars/config/config.toml
 
 
 	# Set pruning
@@ -150,7 +145,7 @@ function sync_snapshot {
 	cp $HOME/.mars/data/priv_validator_state.json $HOME/.mars/priv_validator_state.json.backup
 	rm -rf $HOME/.mars/data
 
-	curl -L https://snapshot.mars.indonode.net/mars-snapshot-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
+	curl -L https://snapshot.mars.indonode.net/mars-snapshot.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
 	mv $HOME/.mars/priv_validator_state.json.backup $HOME/.mars/data/priv_validator_state.json
 
 	sudo systemctl restart marsd && journalctl -u marsd -f --no-hostname -o cat
@@ -250,7 +245,7 @@ function main {
     echo "Choose the command you want to use:"
 
     options=(
-        "🚀 Install Mars Testnet Node Port 20"
+        "🚀 Install Mars Mainnet Node Port 20"
         "📝 Check Logs"
         "🔑 Create wallet"
         "🖧 Sync Via State-sync "
