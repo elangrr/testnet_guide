@@ -19,7 +19,7 @@
 ### [Mars Official Discord](https://discord.gg/marsprotocol)
 
 # Explorer
-### [Explorer](https://explorer.planq.network/ares-1/staking)
+### [Explorer](https://explorer.planq.network/mars-1/staking)
 
 ## Minimum Requirements 
 - 4 or more physical CPU cores
@@ -28,7 +28,7 @@
 - At least 120mbps network bandwidth
 
 
-# Manual Install Node Guide with custom port 20
+# Mars Mainnet Node Guide with custom port 20
 
 ### Set vars and port
 ```
@@ -70,7 +70,7 @@ cd $HOME
 rm -rf hub
 git clone https://github.com/mars-protocol/hub.git
 cd hub
-git checkout v1.0.0-rc7
+git checkout v1.0.0
 ```
 Build Binaries
 ```
@@ -87,27 +87,27 @@ go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.4.0
   
 ### Config
 ```
-marsd config chain-id ares-1
-marsd config keyring-backend test
+marsd config chain-id mars-1
+marsd config keyring-backend file
 marsd config node tcp://localhost:20657
 ```
 
 ### Init 
 ```
-marsd init $MONIKER --chain-id ares-1
+marsd init $MONIKER --chain-id mars-1
 ```
 
 ### Download genesis file and addrbook
 ```
 wget -O $HOME/.mars/config/addrbook.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/addrbook.json"
-wget -O $HOME/.mars/config/genesis.json "https://raw.githubusercontent.com/elangrr/testnet_guide/main/mars/genesis.json"
+wget -O $HOME/.mars/config/addrbook.json "http://service.mars.indonode.net/addrbook.json"
 ```
 
 ### Set minimum gas price , seeds , and peers
 ```
-peers="14ba3b19424301a6bb58c27663a0323a81866d5d@134.122.82.186:26656,6c855909a8bf1c12ef34baca059f5c0cdf82bc36@65.108.255.124:36656,9847d03c789d9c87e84611ebc3d6df0e6123c0cc@91.194.30.203:10656,cec7501f438e2700573cdd9d45e7fb5116ba74b9@176.9.51.55:10256,e12bc490096d1b5f4026980f05a118c82e81df2a@85.17.6.142:26656,7342199e80976b052d8506cc5a56d1f9a1cbb486@65.21.89.54:26653,7226c00dd90cf182ca9ec9aa513f518965e7e1a4@167.235.7.34:43656,846ee4df536ddba9739d3f5eebd0139b0a9e5169@159.148.146.132:27225,719cf7e8f7640a48c782599475d4866b401f2d34@51.254.197.170:26656,fe8d614aa5899a97c11d0601ef50c3e7ce17d57b@65.108.233.109:18556"
-sed -i -e "s|^seeds *=.*|seeds = \"3f472746f46493309650e5a033076689996c8881@mars-testnet.rpc.kjnodes.com:45659\"|" $HOME/.mars/config/config.toml
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.mars/config/config.toml
+seeds="52de8a7e2ad3da459961f633e50f64bf597c7585@seed.marsprotocol.io:443,d2d2629c8c8a8815f85c58c90f80b94690468c4f@tenderseed.ccvalidators.com:26012"
+peers=""
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|; s|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.mars/config/config.toml
 sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0umars\"|" $HOME/.mars/config/app.toml
 ```
 
@@ -187,7 +187,7 @@ To see current keys
 marsd keys list
 ```
 
-### Snapshot 186MB
+### Snapshot Updated every 12 Hours
 ```
 sudo apt update
 sudo apt install snapd -y
@@ -197,35 +197,32 @@ sudo systemctl stop marsd
 cp $HOME/.mars/data/priv_validator_state.json $HOME/.mars/priv_validator_state.json.backup
 rm -rf $HOME/.mars/data
 
-curl -L https://snapshot.mars.indonode.net/mars-snapshot-2023-01-14.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
+curl -L https://snapshot.mars.indonode.net/mars-snapshot.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mars
 mv $HOME/.mars/priv_validator_state.json.backup $HOME/.mars/data/priv_validator_state.json
 
 sudo systemctl restart marsd && journalctl -u marsd -f --no-hostname -o cat
 ```
 
-### Faucet
-[FAUCET HERE](https://faucet.marsprotocol.io/)
-
-  
+ 
 ### Create validator
 After your node is synced, create validator
 
 To check if your node is synced simply run
 `curl http://localhost:20657/status sync_info "catching_up": false`
 
-Creating validator with `4 Mars` change the value as you like
+Creating validator with `1 Mars` change the value as you like
 
 ```
 marsd tx staking create-validator \
-  --amount 4000000umars \
+  --amount 1000000umars \
   --from wallet \
-  --commission-max-change-rate "0.1" \
+  --commission-max-change-rate "0.01" \
   --commission-max-rate "0.2" \
-  --commission-rate "0.1" \
+  --commission-rate "0.05" \
   --min-self-delegation "1" \
   --pubkey $(marsd tendermint show-validator) \
   --moniker $MONIKER \
-  --chain-id ares-1 \
+  --chain-id mars-1 \
   --identity="" \
   --details="" \
   --website="" -y
@@ -312,33 +309,33 @@ marsd tx bank send <FROM ADDRESS> <TO_mars_WALLET_ADDRESS> 10000000umars
 
 ### Voting
 ```
-marsd tx gov vote 1 yes --from wallet --chain-id=ares-1
+marsd tx gov vote 1 yes --from wallet --chain-id=mars-1
 ```
 
 ### Staking, Delegation and Rewards
 Delegate Stake to your own validator
 ```
-marsd tx staking delegate $(marsd keys show wallet --bech val -a) 1000000umars --from wallet --chain-id ares-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.001umars -y
+marsd tx staking delegate $(marsd keys show wallet --bech val -a) 1000000umars --from wallet --chain-id mars-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.001umars -y
 ```
 
 Delegate stake
 ```
-marsd tx staking delegate <mars valoper> 10000000umars --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx staking delegate <mars valoper> 10000000umars --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Redelegate stake from validator to another validator
 ```
-marsd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000umars --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000umars --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Withdraw all rewards
 ```
-marsd tx distribution withdraw-all-rewards --from=wallet --chain-id=ares-1 --gas=auto
+marsd tx distribution withdraw-all-rewards --from=wallet --chain-id=mars-1 --gas=auto
 ```
 
 Withdraw rewards with commision
 ```
-marsd tx distribution withdraw-rewards <mars valoper> --from=wallet --commission --chain-id=ares-1
+marsd tx distribution withdraw-rewards <mars valoper> --from=wallet --commission --chain-id=mars-1
 ```
 
 ### Validator management
@@ -349,7 +346,7 @@ marsd tx staking edit-validator \
   --identity=<your_keybase_id> \
   --website="<your_website>" \
   --details="<your_validator_description>" \
-  --chain-id=ares-1 \
+  --chain-id=mars-1 \
   --from=wallet
 ```
 
@@ -358,7 +355,7 @@ Unjail validator
 marsd tx slashing unjail \
   --broadcast-mode=block \
   --from=wallet \
-  --chain-id=ares-1 \
+  --chain-id=mars-1 \
   --gas=auto
 ```
 
