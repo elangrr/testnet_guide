@@ -278,7 +278,14 @@ echo "$MNEMONIC" > $HOME/.hermes.mnemonic
 hermes keys add --chain "$CHAIN_ID" --mnemonic-file $HOME/.hermes.mnemonic
 rm $HOME/.hermes.mnemonic
 ```
-Change the value of `CHAIN_ID=` and `MNEMONIC` according to the mnemonic and chains you wanna connect so you `Have` to enter this command 4 Times with differrent `CHAIN_ID`
+### for planq, if the address is different from the one in the keplr wallet, please use this
+```
+echo "$MNEMONIC" > $HOME/.hermes.mnemonic
+hermes keys add --chain "$CHAIN_ID" --key-name relayer --hd-path "m/44'/60'/0'/0/0" --mnemonic-file $HOME/.hermes.mnemonic
+rm $HOME/.hermes.mnemonic
+```
+ 
+ Change the value of `CHAIN_ID=` and `MNEMONIC` according to the mnemonic and chains you wanna connect so you `Have` to enter this command 4 Times with differrent `CHAIN_ID`
 
 Successful output :
 ```
