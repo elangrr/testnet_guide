@@ -7,7 +7,7 @@
 
 
 # My Info
-### [Official Website](https://indonode.dev/)
+### [Official Website and Guide now moved to ](https://indonode.net/)
 
 
 List of Cosmos ecosystem projets with custom ports configured:
