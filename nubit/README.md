@@ -68,3 +68,34 @@ To check the logs
 ```bash
 sudo journalctl -fu nubit-light.service -o cat
 ```
+
+View your key list
+```bash
+$HOME/nubit-node/bin/nkey list --p2p.network nubit-alphatestnet-1 --node.type light
+```
+
+View your private key
+```bash
+$HOME/nubit-node/bin/nkey export my_nubit_key --unarmored-hex --unsafe --p2p.network nubit-alphatestnet-1 --node.type light
+```
+
+Check Pubkey
+```bash
+$HOME/nubit-node/bin/nkey list --p2p.network nubit-alphatestnet-1 --node.type light
+```
+
+Import keys using Seed phrase
+```bash
+$HOME/nubit-node/bin/nkey add my_keplr_key --recover --keyring-backend test --node.type light --p2p.network nubit-alphatestnet-1
+```
+
+Import keys using private keys
+```bash
+$HOME/nubit-node/bin/nkey import my_nubit_key ~/nubit-da/nubit-node/account1.private --keyring-backend test --node.type light --p2p.network nubit-alphatestnet-1
+```
+
+Delete keys (WARNING!!! THIS WILL DELETE YOUR KEYS FOREVER!!!!)
+```bash
+rm -rf $HOME/.nubit-light-nubit-alphatestnet-1
+```
+
