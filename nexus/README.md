@@ -98,5 +98,8 @@ Usually its like this
 Mem:            8Gi        5Gi        1Gi       500Mi        2Gi        3Gi
 Swap:           4Gi        0Gi        4Gi
 ```
- 
+Reboot (Optional but highly recommended)
+```
+sudo reboot
+```
  
