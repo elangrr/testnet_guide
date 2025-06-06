@@ -16,7 +16,7 @@
 
 ### Download Script 
 ```bash
-
+wget https://raw.githubusercontent.com/elangrr/testnet_guide/refs/heads/main/redbelly-mainnet/monitoring/monitor.py
 ```
 
 Add these flags to your redbelly systemd service file
@@ -77,11 +77,12 @@ Inside the Virtual Environment add your telegram bot variable
 export REDBELLY_TELEGRAM_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
 export REDBELLY_TELEGRAM_CHAT_ID="YOUR_TELEGRAM_BOT_CHAT_ID" 
 export REDBELLY_MIN_BALANCE=10
+export REDBELLY_TELEGRAM_INTERVAL=3600
 ```
 
 Change the variable to yours , `REDBELLY_MIN_BALANCE` means it will alert you when the sign wallet balance is less than 10 RBNT
 
-* By default it will send notification every hour , but you can edit those interval in the script. Change this part : `"telegram_interval": 3600`
+* By default it will send notification every hour , but you can edit the `REDBELLY_TELEGRAM_INTERVAL` in seconds 3600 = 1 Hour
 
 ## Run the Script
 
