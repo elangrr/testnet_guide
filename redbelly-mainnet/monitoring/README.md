@@ -1,101 +1,98 @@
-# Advanced Redbelly Mainnet Node Monitoring Bot (Python)
+# Redbelly Mainnet Node Monitor + Certificate Auto-Renew
 
-## 🎯 What it monitors:
+A Telegram monitor for a Redbelly node, plus automatic renewal of the node's TLS certificate.
+One command installs both. The script asks for your Telegram bot token and chat id and sets up everything else.
 
-✅ Block height & sync status
+## What it does
 
-✅ Governor status (Governor/Candidate)
+**Monitor**
+- Block height, sync status, how far behind the governors, superblocks
+- Governor / Candidate status, node version
+- Signing wallet balance (alert below your minimum) and, optionally, your reward address balance
+- TLS certificate: what the node has loaded **and** what is on disk
+- CPU, RAM, disk, uptime
 
-✅ Signing balance & certificate validity
+**Telegram**
+- A status report every 6 hours
+- An instant alert when something goes wrong, and a ✅ message when it is fixed
+- Each problem alerts once (repeats after 6 h if still open), so no spam
 
-✅ Block processing rate & sync times
+**Certificate auto-renew**
+- certbot renews the Let's Encrypt certificate 30 days before it expires (checked twice a day)
+- A certbot hook copies the new certificate to the node's certificate folder with the right owner and permissions
+- You get a Telegram message after every renewal
+- The monitor warns you if the certificate gets below 21 days (auto-renew failing) and if a renewed certificate is on disk but the node still uses the old one
+- The node does not need a restart: rbbc 1.3.x picks up the new files by itself (if yours does not, the monitor tells you; you can also set `RESTART_NODE=1` in `/etc/redbelly-monitor/cert-hook.conf`)
 
-✅ Instant alerts for issues + recovery notifications
+## Requirements
 
-## Setup
+- A Redbelly node installed with the official installer (it creates `/etc/redbelly/rbninstaller-config`)
+- The status server enabled: `--statusserver.udp.addr=127.0.0.1 --statusserver.udp.port=6540` (the installer enables it by default)
+- Ubuntu / Debian with `sudo`
+- For auto-renew: your node domain points to this server and port 80 is reachable for Let's Encrypt
+- A Telegram bot token from [@BotFather](https://t.me/BotFather) and your chat id from [@userinfobot](https://t.me/userinfobot)
 
-### Download Script 
-```bash
-wget https://raw.githubusercontent.com/elangrr/testnet_guide/refs/heads/main/redbelly-mainnet/monitoring/monitor.py
-```
-
-Add these flags to your redbelly systemd service file
-```bash
---statusserver.addr=127.0.0.1 --statusserver.port=6539 --prometheus.addr=127.0.0.1
-```
-
-### Guide : 
-
-Install Python and its requirements
-```
-sudo apt update
-sudo apt install python3 python3-pip python3-venv
-```
-
-Stop redbelly service
-```bash
-sudo systemctl stop redbelly.service
-```
-Edit the service file
-
-```
-sudo nano /etc/systemd/system/redbelly.service
-```
-
-find the `ExecStart` and make sure it is setup this way
-```bash
-ExecStart=(your other flags) --statusserver.addr=127.0.0.1 --statusserver.port=6539 --prometheus.addr=127.0.0.1 --mainnet
-```
-
-Reload and restart Redbelly
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart redbelly.service
-sudo systemctl status redbelly.service
-```
-
-you can do as you like to the script but I like to use `screen` following with python virtual environment
-
-Go into `screen`
-```bash
-screen -S redbelly_monitor
-```
-
-Setup the python Environment
-```bash
-python3 -m venv redbelly_monitor_env
-source redbelly_monitor_env/bin/activate
-```
-
-Install Requirements
-```
-pip install requests python-dateutil
-```
-
-Inside the Virtual Environment add your telegram bot variable
-```
-export REDBELLY_TELEGRAM_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
-export REDBELLY_TELEGRAM_CHAT_ID="YOUR_TELEGRAM_BOT_CHAT_ID" 
-export REDBELLY_MIN_BALANCE=10
-export REDBELLY_TELEGRAM_INTERVAL=3600
-```
-
-Change the variable to yours , `REDBELLY_MIN_BALANCE` means it will alert you when the sign wallet balance is less than 10 RBNT
-
-* By default it will send notification every hour , but you can edit the `REDBELLY_TELEGRAM_INTERVAL` in seconds 3600 = 1 Hour
-
-## Run the Script
-
-inside virtual environment 
-```bash
-python monitor.py
-```
-
-Detach screen using `CTRL+A+D` 
-
-If you want to stop the screen simply 
+## Install (one command)
 
 ```bash
-screen -r redbelly_monitor
+curl -fsSL https://raw.githubusercontent.com/elangrr/testnet_guide/main/redbelly-mainnet/monitoring/install.sh -o install.sh && sudo bash install.sh
 ```
-and `CTRL+C`
+
+The installer:
+1. checks your node (domain, certificate path, status server)
+2. installs what is missing (python3-venv, openssl, certbot)
+3. asks for your Telegram token, chat id, minimum balance and (optional) reward address
+4. installs the monitor as a service (`redbelly-monitor`, runs as its own user `rbmon`, starts on boot)
+5. sets up certificate auto-renew and tests it with a dry run
+6. prints one report and sends a test message to Telegram
+
+It never reads or touches your signing key, and it never restarts your node.
+
+**No prompts** (for scripts):
+```bash
+RB_TG_TOKEN="123:abc" RB_TG_CHAT="123456" RB_MIN_BALANCE=10 RB_REWARD="0x..." RB_YES=1 sudo -E bash install.sh
+```
+
+## Daily use
+
+| What | Command |
+|---|---|
+| Live dashboard | `sudo -u rbmon /opt/redbelly-monitor/venv/bin/python /opt/redbelly-monitor/monitor.py --config /etc/redbelly-monitor/config.json --console` |
+| One report now | same command with `--once` instead of `--console` |
+| Logs | `journalctl -u redbelly-monitor -f` |
+| Change settings | `sudo nano /etc/redbelly-monitor/config.json && sudo systemctl restart redbelly-monitor` |
+| Certificate renewals | `cat /var/log/redbelly-cert-hook.log` |
+| Test renewal | `sudo certbot renew --dry-run` |
+| Update | run the install command again (your settings are kept) |
+| Remove | `curl -fsSL https://raw.githubusercontent.com/elangrr/testnet_guide/main/redbelly-mainnet/monitoring/uninstall.sh \| sudo bash` |
+
+## Settings (`/etc/redbelly-monitor/config.json`)
+
+| Key | Default | Meaning |
+|---|---|---|
+| `telegram_token`, `telegram_chat_id` | | Telegram bot and chat |
+| `min_balance` | 10 | Alert when the signing balance is below this (RBNT) |
+| `reward_address` | | Optional address whose balance is shown |
+| `telegram_interval` | 21600 | Seconds between status reports (0 = alerts only) |
+| `realert_hours` | 6 | Repeat an unresolved alert after this many hours |
+| `cert_warn_days`, `cert_critical_days` | 21, 7 | Certificate warning levels |
+| `max_blocks_behind` | 100 | Alert when this far behind the governors |
+| `max_minutes_no_block` | 30 | Alert when no block for this long **and** the governors are ahead (a quiet chain is normal) |
+| `disk_warn_pct` | 85 | Disk usage alert |
+| `udp_port` | 6540 | Node status server port |
+
+Any setting can also be overridden with an environment variable `REDBELLY_<KEY>`, e.g. `REDBELLY_MIN_BALANCE=20`.
+
+## Coming from the old screen setup
+
+If you ran `monitor.py` in `screen`, stop it after installing so you don't get double messages:
+```bash
+screen -ls                    # find the session
+screen -r redbelly_monitor    # then Ctrl+C, and exit
+```
+
+## Troubleshooting
+
+- **"Status server unreachable"**: check the node flags include `--statusserver.udp.port=6540`, then `sudo -u rbmon /opt/redbelly-monitor/venv/bin/python /opt/redbelly-monitor/monitor.py --test-udp`.
+- **Dry-run renewal fails**: port 80 must be open to the internet (`sudo ufw allow 80/tcp`) and your domain must point to this server. If nginx uses port 80, certbot's nginx plugin handles it.
+- **No Telegram messages**: `sudo -u rbmon /opt/redbelly-monitor/venv/bin/python /opt/redbelly-monitor/monitor.py --config /etc/redbelly-monitor/config.json --test-telegram`

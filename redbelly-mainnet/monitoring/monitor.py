@@ -1,437 +1,399 @@
+#!/usr/bin/env python3
+"""
+Redbelly Node Monitor v3
+- Reads the node's UDP status server (default 127.0.0.1:6540)
+- Telegram: periodic status report + instant alerts when a problem starts and when it is fixed
+  (no repeated spam: each problem alerts once, then again only after `realert_hours`)
+- TLS certificate watch: what the node has loaded, what is on disk, and whether auto-renew is overdue
+- Signing / reward balance, governor status, CPU / RAM / disk
+- Runs as a systemd service (install.sh) or in a terminal with a live dashboard (--console)
+"""
+
 import argparse
-from datetime import datetime, timezone, timedelta
-import requests
-import time
-from dateutil import parser as date_parser
-from decimal import Decimal
+import json
 import logging
 import os
-import json
+import socket
+import subprocess
+import sys
+import time
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from pathlib import Path
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+import requests
+from dateutil import parser as date_parser
 
-ether_in_wei = Decimal("1000000000000000000")
-blockChanges: list[tuple[int, datetime]] = []
+try:
+    import psutil
+    HAS_PSUTIL = True
+except ImportError:
+    HAS_PSUTIL = False
 
-def format_duration(td: timedelta) -> str:
-    """Format timedelta for better readability with days conversion"""
-    total_seconds = int(td.total_seconds())
-    
-    if total_seconds < 0:
-        return "EXPIRED"
-    
-    days = total_seconds // 86400
-    hours = (total_seconds % 86400) // 3600
-    minutes = (total_seconds % 3600) // 60
-    
-    if days > 0:
-        if hours > 0:
-            return f"{days}d {hours}h {minutes}m ({days} days)"
-        else:
-            return f"{days}d {minutes}m ({days} days)"
-    elif hours > 0:
-        return f"{hours}h {minutes}m"
-    else:
-        return f"{minutes}m"
+VERSION = "3.0"
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+log = logging.getLogger("redbelly-monitor")
 
-class TelegramBot:
-    def __init__(self, token: str, chat_id: str):
-        self.token = token
-        self.chat_id = chat_id
-        self.base_url = f"https://api.telegram.org/bot{token}"
-        
-    def send_message(self, message: str):
-        """Send message to Telegram chat"""
-        url = f"{self.base_url}/sendMessage"
-        data = {
-            "chat_id": self.chat_id,
-            "text": message,
-            "parse_mode": "HTML"
-        }
-        
+WEI = Decimal(10) ** 18
+UDP_MSG = b"getStatus"
+INSTALLER_CONFIG = Path("/etc/redbelly/rbninstaller-config")
+CONFIG_PATHS = [Path("/etc/redbelly-monitor/config.json"), Path("redbelly_config.json")]
+
+DEFAULT_CFG = {
+    "udp_host": "127.0.0.1",
+    "udp_port": 6540,
+    "service_name": "redbelly",
+    "min_balance": 10,
+    "refresh_seconds": 15,
+    "telegram_interval": 21600,      # status report every 6 h (0 = alerts only)
+    "realert_hours": 6,              # repeat an unresolved alert after this many hours
+    "telegram_token": "",
+    "telegram_chat_id": "",
+    "reward_address": "",
+    "rpc_url": "https://governors.mainnet.redbelly.network",
+    "cert_file": "",                 # empty = read from /etc/redbelly/rbninstaller-config
+    "cert_warn_days": 21,            # certbot renews at 30 days left; under 21 means auto-renew is failing
+    "cert_critical_days": 7,
+    "max_blocks_behind": 100,
+    "max_minutes_no_block": 30,      # Redbelly only makes blocks when there are transactions
+    "max_minutes_gov_sync": 5,
+    "disk_warn_pct": 85,
+}
+
+_block_samples: list[tuple[int, datetime]] = []
+
+
+# ── helpers ──────────────────────────────────────────────────────────────────
+
+def fmt_duration(td: timedelta | None) -> str:
+    if td is None:
+        return "N/A"
+    secs = int(td.total_seconds())
+    neg, secs = secs < 0, abs(secs)
+    d, r = divmod(secs, 86400)
+    h, r = divmod(r, 3600)
+    m = r // 60
+    out = f"{d}d {h}h" if d else (f"{h}h {m}m" if h else f"{m}m")
+    return "-" + out if neg else out
+
+
+def parse_ts(raw) -> datetime | None:
+    if not raw:
+        return None
+    try:
+        from dateutil.tz import tzoffset
+        tz = {k: tzoffset(k, v) for k, v in {"CET": 3600, "CEST": 7200, "UTC": 0, "GMT": 0}.items()}
+        dt = date_parser.parse(str(raw), tzinfos=tz)
+        return (dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
+    except Exception:
+        return None
+
+
+def block_rate() -> float:
+    if len(_block_samples) < 2:
+        return 0.0
+    (b0, t0), (b1, t1) = _block_samples[0], _block_samples[-1]
+    dt = (t1 - t0).total_seconds()
+    return 0.0 if dt <= 0 else (b1 - b0) / dt
+
+
+def read_installer_config() -> dict:
+    out = {}
+    try:
+        for line in INSTALLER_CONFIG.read_text().splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                out[k.strip()] = v.strip().strip('"')
+    except OSError:
+        pass
+    return out
+
+
+def cert_file_expiry(path: str) -> datetime | None:
+    """Expiry of the certificate file on disk (public cert only; the private key is never read)."""
+    if not path or not os.path.exists(path):
+        return None
+    try:
+        r = subprocess.run(["openssl", "x509", "-in", path, "-noout", "-enddate"], capture_output=True, text=True, timeout=10)
+        return parse_ts(r.stdout.strip().split("=", 1)[1]) if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+# ── data sources ─────────────────────────────────────────────────────────────
+
+def fetch_status_udp(host: str, port: int) -> dict:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.settimeout(3)
         try:
-            response = requests.post(url, json=data, timeout=10)
-            response.raise_for_status()
-            logger.info("Status sent to Telegram")
+            s.sendto(UDP_MSG, (host, port))
+            data, _ = s.recvfrom(65535)
+            return json.loads(data.decode())
+        except socket.timeout:
+            raise ConnectionError(f"no reply from status server {host}:{port}")
+        except (OSError, ValueError) as e:
+            raise ConnectionError(f"status server error: {e}")
+
+
+def get_governor_status() -> str:
+    for url in ("http://localhost:8080/metrics", "http://localhost:8080/debug/metrics"):
+        try:
+            r = requests.get(url, timeout=3)
+            for line in r.text.splitlines() if r.ok else []:
+                if line.startswith("is_governor "):
+                    return "Governor" if line.split()[1].startswith("1") else "Candidate"
+        except requests.RequestException:
+            pass
+    return "Unknown"
+
+
+def get_balance(rpc: str, address: str) -> Decimal | None:
+    try:
+        r = requests.post(rpc, json={"jsonrpc": "2.0", "method": "eth_getBalance", "params": [address, "latest"], "id": 1}, timeout=10)
+        r.raise_for_status()
+        return Decimal(int(r.json().get("result") or "0x0", 16)) / WEI
+    except Exception as e:
+        log.warning(f"balance fetch failed: {e}")
+        return None
+
+
+def service_active(name: str) -> bool:
+    try:
+        return subprocess.run(["systemctl", "is-active", name], capture_output=True, text=True, timeout=5).stdout.strip() == "active"
+    except Exception:
+        return False
+
+
+def system_info() -> dict:
+    if not HAS_PSUTIL:
+        return {}
+    try:
+        vm, du = psutil.virtual_memory(), psutil.disk_usage("/")
+        return {"cpu": psutil.cpu_percent(interval=1), "ram": vm.percent, "disk": du.percent,
+                "disk_used": du.used / 1024 ** 3, "disk_total": du.total / 1024 ** 3,
+                "uptime": datetime.now(timezone.utc) - datetime.fromtimestamp(psutil.boot_time(), tz=timezone.utc)}
+    except Exception:
+        return {}
+
+
+# ── status model ─────────────────────────────────────────────────────────────
+
+def parse_status(d: dict, cfg: dict) -> dict:
+    now = datetime.now(timezone.utc)
+
+    def ago(key):
+        t = parse_ts(d.get(key))
+        return (now - t) if t else None
+
+    cert_node = parse_ts(d.get("certificatesValidUpto"))
+    cert_disk = cert_file_expiry(cfg["cert_file"])
+    raw_bal = d.get("signingAddressBalance") or "0"
+    return {
+        "now": now,
+        "block": int(d.get("currentBlock", 0)),
+        "gov_block": int(d.get("lastBlockFromGovernors", 0)),
+        "sb": int(d.get("currentSuperblock", 0)),
+        "boot_sb": int(d.get("lastSuperblockFromBootnodes", 0)),
+        "synced": bool(d.get("isRecoveryComplete", False)),
+        "signing_addr": str(d.get("signingAddress", "")),
+        "signing_bal": Decimal(str(raw_bal)) / WEI,
+        "version": str(d.get("version", "?")).split()[0],
+        "cert_dns": d.get("certificateDnsNames") or [],
+        "since_block": ago("lastCommittedBlockAt"),
+        "since_gov_sync": ago("lastSyncedWithGovernorNodes"),
+        "cert_node_left": (cert_node - now) if cert_node else None,
+        "cert_disk_left": (cert_disk - now) if cert_disk else None,
+    }
+
+
+def problems(s: dict | None, cfg: dict, sysi: dict, err: str | None) -> dict:
+    """Current problems as {key: text}. Keys stay stable so each problem alerts once."""
+    p = {}
+    if not service_active(cfg["service_name"]):
+        p["service"] = f"systemd service {cfg['service_name']} is NOT active"
+    if err:
+        p["status"] = f"Status server unreachable: {err}"
+    if s:
+        behind = s["gov_block"] - s["block"]
+        if not s["synced"]:
+            p["sync"] = "Node is still syncing"
+        if behind > cfg["max_blocks_behind"]:
+            p["behind"] = f"Node is {behind:,} blocks behind the governors"
+        if s["since_block"] and s["since_block"] > timedelta(minutes=cfg["max_minutes_no_block"]) and behind > 0:
+            p["stall"] = f"No new block for {fmt_duration(s['since_block'])} while governors are ahead"
+        if s["since_gov_sync"] and s["since_gov_sync"] > timedelta(minutes=cfg["max_minutes_gov_sync"]):
+            p["govsync"] = f"Last governor sync {fmt_duration(s['since_gov_sync'])} ago"
+        if s["signing_bal"] < cfg["min_balance"]:
+            p["balance"] = f"Signing balance low: {s['signing_bal']:.4f} RBNT (min {cfg['min_balance']})"
+        node, disk = s["cert_node_left"], s["cert_disk_left"]
+        if node is not None:
+            if node.total_seconds() <= 0:
+                p["cert"] = "TLS certificate EXPIRED"
+            elif node < timedelta(days=cfg["cert_critical_days"]):
+                p["cert"] = f"TLS certificate expires in {fmt_duration(node)}"
+            elif node < timedelta(days=cfg["cert_warn_days"]):
+                p["cert"] = (f"TLS certificate has {fmt_duration(node)} left: auto-renew should have run at 30 days. "
+                             "Check: sudo certbot renew --dry-run")
+        if node is not None and disk is not None and disk - node > timedelta(days=1):
+            p["certload"] = (f"Renewed certificate is on disk ({fmt_duration(disk)} left) but the node still uses the "
+                             f"old one ({fmt_duration(node)} left). Restart the node at a quiet moment.")
+    if sysi.get("disk", 0) >= cfg["disk_warn_pct"]:
+        p["disk"] = f"Disk {sysi['disk']:.0f}% full ({sysi['disk_used']:.0f}/{sysi['disk_total']:.0f} GB)"
+    return p
+
+
+# ── output ───────────────────────────────────────────────────────────────────
+
+def cert_line(left: timedelta | None, cfg: dict) -> str:
+    if left is None:
+        return "N/A"
+    if left.total_seconds() <= 0:
+        return "🔴 EXPIRED"
+    if left < timedelta(days=cfg["cert_critical_days"]):
+        icon = "🔴"
+    elif left < timedelta(days=cfg["cert_warn_days"]):
+        icon = "🟡"
+    else:
+        icon = "🟢"
+    return f"{icon} {fmt_duration(left)} left"
+
+
+def report(s: dict | None, gov: str, reward, sysi: dict, probs: dict, cfg: dict) -> str:
+    if not s:
+        return "📊 <b>Redbelly Node</b>\n🔴 status server unreachable\n\n" + "\n".join(f"• {v}" for v in probs.values())
+    behind = s["gov_block"] - s["block"]
+    head = "🟢 OK" if not probs else f"⚠️ {len(probs)} issue(s)"
+    lines = [
+        f"📊 <b>Redbelly Node</b> ({head})",
+        f"🔧 v{s['version']} · {'synced' if s['synced'] else 'syncing'} · {gov}",
+        f"📦 Block {s['block']:,} (behind {behind:,}) · last {fmt_duration(s['since_block'])} ago",
+        f"🏗 Superblock {s['sb']:,} (behind {s['boot_sb'] - s['sb']:,})",
+        f"💰 Signing {s['signing_bal']:.4f} RBNT" + (f" · Reward {reward:.4f} RBNT" if reward is not None else ""),
+        f"🔐 Cert {', '.join(s['cert_dns'])}: node {cert_line(s['cert_node_left'], cfg)} · file {cert_line(s['cert_disk_left'], cfg)}",
+    ]
+    if sysi:
+        lines.append(f"💻 CPU {sysi['cpu']:.0f}% · RAM {sysi['ram']:.0f}% · Disk {sysi['disk']:.0f}% · up {fmt_duration(sysi['uptime'])}")
+    if probs:
+        lines += ["", "⚠️ <b>Issues</b>"] + [f"• {v}" for v in probs.values()]
+    return "\n".join(lines)
+
+
+class Telegram:
+    def __init__(self, token: str, chat: str):
+        self.url, self.chat = f"https://api.telegram.org/bot{token}/sendMessage", chat
+
+    def send(self, text: str) -> bool:
+        try:
+            r = requests.post(self.url, json={"chat_id": self.chat, "text": text, "parse_mode": "HTML",
+                                              "disable_web_page_preview": True}, timeout=15)
+            r.raise_for_status()
             return True
         except Exception as e:
-            logger.error(f"Failed to send to Telegram: {e}")
+            log.error(f"telegram send failed: {type(e).__name__}")   # never log the URL: it holds the token
             return False
 
-def clear_screen():
-    print("\033[2J\033[H", end='', flush=True)
 
-def get_block_ps(blockChange: list[tuple[int, datetime]]) -> float:
-    if len(blockChange) < 2:
-        return 0
-    
-    (startBlock, startTime) = blockChange[0]
-    (endBlock, endTime) = blockChange[-1]
-    timeChange = endTime.replace(tzinfo=timezone.utc) - startTime.replace(tzinfo=timezone.utc)
-    if timeChange.total_seconds() == 0:
-        return 0
-    return float(endBlock - startBlock) / timeChange.total_seconds()
+# ── main loop ────────────────────────────────────────────────────────────────
 
-def get_governor_status():
-    """Check governor status from metrics endpoint"""
+def collect(cfg: dict):
     try:
-        response = requests.get("http://localhost:8080/metrics", timeout=5)
-        response.raise_for_status()
-        
-        for line in response.text.split('\n'):
-            if line.startswith('is_governor ') and not line.startswith('#'):
-                # Extract value from line like "is_governor 1"
-                parts = line.split()
-                if len(parts) >= 2:
-                    value = int(parts[1])
-                    if value == 0:
-                        return "🟡 Candidate"
-                    elif value == 1:
-                        return "🟢 Governor"
-                    else:
-                        return f"❓ Unknown ({value})"
-        
-        return "❌ Metric Not Found"
-        
-    except requests.exceptions.RequestException:
-        return "❌ Metrics Unavailable"
-    except Exception as e:
-        return f"❌ Error: {str(e)[:20]}"
-    """Format timedelta for better readability"""
-    total_seconds = int(td.total_seconds())
-    if total_seconds < 60:
-        return f"{total_seconds}s"
-    elif total_seconds < 3600:
-        minutes = total_seconds // 60
-        seconds = total_seconds % 60
-        return f"{minutes}m {seconds}s"
-    else:
-        hours = total_seconds // 3600
-        minutes = (total_seconds % 3600) // 60
-        return f"{hours}h {minutes}m"
+        raw, err = fetch_status_udp(cfg["udp_host"], cfg["udp_port"]), None
+    except ConnectionError as e:
+        raw, err = None, str(e)
+    s = parse_status(raw, cfg) if raw else None
+    if s:
+        _block_samples.append((s["block"], s["now"]))
+        del _block_samples[:-20]
+    return s, err
 
-def create_telegram_message(address: str, min_balance: int) -> str:
-    """Get status and create Telegram message"""
-    url = address + "/status"
-    
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-    except Exception as e:
-        return f"🚨 <b>CONNECTION ERROR</b>\n\nCannot connect to {url}\nError: {str(e)}"
-    
-    # Parse all the data
-    isRecoveryComplete = bool(data["isRecoveryComplete"])
-    
-    lastCommittedBlockAt = datetime.fromtimestamp(0) if data["lastCommittedBlockAt"] == "" else date_parser.parse(data["lastCommittedBlockAt"])
-    timeSinceLastBlock = datetime.now(timezone.utc) - lastCommittedBlockAt.replace(tzinfo=timezone.utc)
-    
-    currentBlock = int(data["currentBlock"])
-    lastBlockFromGovernors = int(data["lastBlockFromGovernors"])
-    lastSyncedWithGovernorNodes = datetime.fromtimestamp(0) if data["lastSyncedWithGovernorNodes"] == "" else date_parser.parse(data["lastSyncedWithGovernorNodes"])
-    timeSinceLastSyncWithGovs = datetime.now(timezone.utc) - lastSyncedWithGovernorNodes.replace(tzinfo=timezone.utc)
-    blocksBehind = lastBlockFromGovernors - currentBlock
-    
-    blockChanges.append((currentBlock, lastCommittedBlockAt))
-    if len(blockChanges) > 10:
-        blockChanges.pop(0)
-    
-    currentSuperblock = int(data["currentSuperblock"])
-    lastSyncedWithBootnodes = datetime.fromtimestamp(0) if data["lastSyncedWithBootnodes"] == "" else date_parser.parse(data["lastSyncedWithBootnodes"])
-    lastSuperblockFromBootnodes = int(data["lastSuperblockFromBootnodes"])
-    timeSinceLastSyncWithBootnodes = datetime.now(timezone.utc) - lastSyncedWithBootnodes.replace(tzinfo=timezone.utc)
-    superblocksBehind = lastSuperblockFromBootnodes - currentSuperblock
-    
-    certificateDnsNames: list[str] = data["certificateDnsNames"]
-    certificatesValidUpto = datetime.fromtimestamp(0) if data["certificatesValidUpto"] == "" else date_parser.parse(data["certificatesValidUpto"])
-    certificateValidDuration = certificatesValidUpto.replace(tzinfo=timezone.utc) - datetime.now(timezone.utc)
-    
-    signingAddress = str(data["signingAddress"])
-    signingAddressBalance = Decimal(data["signingAddressBalance"]) / ether_in_wei
-    
-    version = str(data["version"])
-    
-    # Get governor status
-    governor_status = get_governor_status()
-    
-    # Create message
-    message_parts = []
-    warnings = []
-    
-    # Header
-    message_parts.append("📊 <b>Redbelly Node Status Report</b>")
-    message_parts.append("")
-    
-    # Sync status
-    if isRecoveryComplete:
-        message_parts.append("🟢 <b>Sync Status:</b> Complete")
-    else:
-        message_parts.append("🟡 <b>Sync Status:</b> Initial sync in progress")
-    
-    # Block info
-    message_parts.append(f"📦 <b>Current Block:</b> {currentBlock:,}")
-    message_parts.append(f"📈 <b>Governor Block:</b> {lastBlockFromGovernors:,}")
-    if blocksBehind > 0:
-        message_parts.append(f"⏳ <b>Blocks Behind:</b> {blocksBehind}")
-        if blocksBehind > 100:
-            warnings.append(f"Node is {blocksBehind} blocks behind")
-    
-    message_parts.append(f"⚡ <b>Block Rate:</b> {get_block_ps(blockChanges):.2f} blocks/sec")
-    message_parts.append(f"🕐 <b>Last Block:</b> {format_duration(timeSinceLastBlock)} ago")
-    
-    if timeSinceLastBlock > timedelta(minutes=5):
-        warnings.append("No block processed in 5+ minutes")
-    
-    # Superblock info
-    message_parts.append("")
-    message_parts.append(f"🏗️ <b>Current Superblock:</b> {currentSuperblock:,}")
-    message_parts.append(f"📈 <b>Bootnode Superblock:</b> {lastSuperblockFromBootnodes:,}")
-    if superblocksBehind > 0:
-        message_parts.append(f"⏳ <b>Superblocks Behind:</b> {superblocksBehind}")
-        if superblocksBehind > 100:
-            warnings.append(f"Node is {superblocksBehind} superblocks behind")
-    
-    # Sync times
-    message_parts.append("")
-    message_parts.append(f"🔄 <b>Governor Sync:</b> {format_duration(timeSinceLastSyncWithGovs)} ago")
-    if timeSinceLastSyncWithGovs > timedelta(minutes=1):
-        warnings.append("Governor sync delayed 1+ minutes")
-    
-    message_parts.append(f"🔄 <b>Bootnode Sync:</b> {format_duration(timeSinceLastSyncWithBootnodes)} ago")
-    if timeSinceLastSyncWithBootnodes > timedelta(minutes=2):
-        warnings.append("Bootnode sync delayed 2+ minutes")
-    
-    # Balance
-    message_parts.append("")
-    message_parts.append(f"💰 <b>Signing Address:</b> <code>{signingAddress}</code>")
-    message_parts.append(f"💰 <b>Balance:</b> {signingAddressBalance:.2f} RBNT")
-    if signingAddressBalance < min_balance:
-        warnings.append(f"Balance ({signingAddressBalance:.2f} RBNT) below minimum ({min_balance} RBNT)")
-    
-    # Certificate
-    message_parts.append("")
-    message_parts.append(f"🔐 <b>Certificate DNS:</b> {', '.join(certificateDnsNames)}")
-    cert_duration = format_duration(certificateValidDuration)
-    if certificateValidDuration <= timedelta():
-        message_parts.append("🔴 <b>Certificate:</b> EXPIRED")
-        warnings.append("Certificate has expired")
-    elif certificateValidDuration <= timedelta(days=7):
-        message_parts.append(f"🟡 <b>Certificate:</b> Expires in {cert_duration}")
-        warnings.append(f"Certificate expires in {cert_duration}")
-    else:
-        message_parts.append(f"🟢 <b>Certificate:</b> Valid for {cert_duration}")
-    
-    # Version and Governor Status
-    message_parts.append("")
-    message_parts.append(f"🔧 <b>Version:</b> {version}")
-    message_parts.append(f"👑 <b>Governor Status:</b> {governor_status}")
-    
-    # Warnings
-    if warnings:
-        message_parts.append("")
-        message_parts.append("⚠️ <b>WARNINGS:</b>")
-        for warning in warnings:
-            message_parts.append(f"• {warning}")
-    
-    # Timestamp
-    message_parts.append("")
-    message_parts.append(f"🕐 <i>Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</i>")
-    
-    return "\n".join(message_parts)
 
-def run_loop(address: str, min_balance: int, refresh_seconds: int, telegram_interval: int, telegram_bot=None):
-    last_telegram_send = datetime.now() - timedelta(seconds=telegram_interval)
-    
-    # Send startup message
-    if telegram_bot:
-        startup_msg = "🚀 <b>Redbelly Monitor Started</b>\n\nMonitoring has begun. Full status reports will be sent regularly."
-        telegram_bot.send_message(startup_msg)
-    
-    try:
-        while True:
-            # Console monitoring (every few seconds)
-            result = monitor_console(address, min_balance)
-            clear_screen()
-            print(result)
-            
-            # Telegram reports (every X minutes)
-            current_time = datetime.now()
-            if telegram_bot and (current_time - last_telegram_send).total_seconds() >= telegram_interval:
-                telegram_message = create_telegram_message(address, min_balance)
-                if telegram_bot.send_message(telegram_message):
-                    last_telegram_send = current_time
-            
-            time.sleep(refresh_seconds)
-            
-    except KeyboardInterrupt:
-        print("\nExiting...")
-        if telegram_bot:
-            telegram_bot.send_message("🛑 <b>Redbelly Monitor Stopped</b>\nMonitoring has been stopped.")
-    except Exception as e:
-        error_msg = f"Connection error: {str(e)}"
-        print(f"\n{error_msg}")
-        if telegram_bot:
-            telegram_bot.send_message(f"🚨 <b>Monitor Error</b>\n\n{error_msg}")
-        exit(1)
+def run(cfg: dict, tg, console: bool):
+    open_alerts: dict = {}
+    epoch = datetime.min.replace(tzinfo=timezone.utc)
+    last_report, reward, reward_ts = epoch, None, epoch
+    if tg:
+        tg.send(f"🚀 <b>Redbelly Monitor v{VERSION} started</b>")
+    while True:
+        s, err = collect(cfg)
+        sysi = system_info()
+        now = datetime.now(timezone.utc)
+        if cfg["reward_address"] and now - reward_ts > timedelta(minutes=10):
+            reward, reward_ts = get_balance(cfg["rpc_url"], cfg["reward_address"]), now
+        gov = get_governor_status() if s else "Unknown"
+        probs = problems(s, cfg, sysi, err)
 
-def monitor_console(address: str, min_balance: int) -> str:
-    """Console monitoring (simplified version)"""
-    url = address + "/status"
-    parts = []
-    
-    parts.append(f"Monitoring: {url}")
-    
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        
-        currentBlock = int(data["currentBlock"])
-        signingAddressBalance = Decimal(data["signingAddressBalance"]) / ether_in_wei
-        isRecoveryComplete = bool(data["isRecoveryComplete"])
-        governor_status = get_governor_status()
-        
-        parts.append(f"Block: {currentBlock:,}")
-        parts.append(f"Balance: {signingAddressBalance:.2f} RBNT")
-        parts.append(f"Sync: {'Complete' if isRecoveryComplete else 'In Progress'}")
-        parts.append(f"Governor: {governor_status}")
-        
-        return "\n".join(parts)
-        
-    except Exception as e:
-        return f"ERROR: Cannot connect to {url}\n{str(e)}"
+        if tg:
+            for k, text in probs.items():
+                if k not in open_alerts or now - open_alerts[k] > timedelta(hours=cfg["realert_hours"]):
+                    if tg.send(f"🚨 <b>Redbelly alert</b>\n{text}"):
+                        open_alerts[k] = now
+            for k in [k for k in open_alerts if k not in probs]:
+                tg.send(f"✅ <b>Redbelly recovered</b>\n{k} is OK again")
+                del open_alerts[k]
+            if cfg["telegram_interval"] and (now - last_report).total_seconds() >= cfg["telegram_interval"]:
+                if tg.send(report(s, gov, reward, sysi, probs, cfg)):
+                    last_report = now
 
-def load_config():
-    """Load configuration from file and environment variables"""
-    config = {
-        "node_address": "http://localhost:6539",
-        "min_balance": 10,
-        "refresh_seconds": 5,
-        "telegram_interval": 3600, # Run Every Hour or ignore this
-        "telegram_token": "", # You can hardcoded this or ignore it
-        "telegram_chat_id": "" # You can hardcoded this or ignore it
-    }
-    
-    # Load from config file if exists
-    config_file = Path("redbelly_config.json")
-    if config_file.exists():
+        if console:
+            plain = report(s, gov, reward, sysi, probs, cfg).replace("<b>", "").replace("</b>", "")
+            print("\033[2J\033[H" + plain + f"\n\nrate {block_rate():.3f} blk/s · {now:%H:%M:%S} UTC · Ctrl+C to stop", flush=True)
+        elif probs:
+            log.warning("issues: " + " | ".join(probs.values()))
+        time.sleep(cfg["refresh_seconds"])
+
+
+def load_config(path: str | None) -> dict:
+    cfg = dict(DEFAULT_CFG)
+    for p in ([Path(path)] if path else CONFIG_PATHS):
+        if p.exists():
+            cfg.update(json.loads(p.read_text()))
+            log.info(f"config: {p}")
+            break
+    for key, val in DEFAULT_CFG.items():   # REDBELLY_<KEY> environment overrides, e.g. REDBELLY_MIN_BALANCE=20
+        env = os.getenv("REDBELLY_" + key.upper())
+        if env:
+            cfg[key] = env if isinstance(val, str) else type(val)(env)
+    if not cfg["cert_file"]:
+        cfg["cert_file"] = read_installer_config().get("FULL_PATH_FOR_CERTIFICATE_FILE", "")
+    return cfg
+
+
+def main():
+    ap = argparse.ArgumentParser(description=f"Redbelly Node Monitor v{VERSION}")
+    ap.add_argument("--config", help="config file (default /etc/redbelly-monitor/config.json or ./redbelly_config.json)")
+    ap.add_argument("--console", action="store_true", help="live dashboard in the terminal")
+    ap.add_argument("--once", action="store_true", help="print one report and exit")
+    ap.add_argument("--test-telegram", action="store_true", help="send one report to Telegram and exit")
+    ap.add_argument("--test-udp", action="store_true", help="print the raw status JSON and exit")
+    a = ap.parse_args()
+    cfg = load_config(a.config)
+    tg = Telegram(cfg["telegram_token"], cfg["telegram_chat_id"]) if cfg["telegram_token"] and cfg["telegram_chat_id"] else None
+
+    if a.test_udp:
         try:
-            with open(config_file, 'r') as f:
-                file_config = json.load(f)
-                config.update(file_config)
-                logger.info("Loaded config from redbelly_config.json")
-        except Exception as e:
-            logger.warning(f"Could not load config file: {e}")
-    
-    # Override with environment variables
-    env_vars = {
-        "REDBELLY_NODE_ADDRESS": "node_address",
-        "REDBELLY_MIN_BALANCE": ("min_balance", int),
-        "REDBELLY_REFRESH_SECONDS": ("refresh_seconds", int),
-        "REDBELLY_TELEGRAM_INTERVAL": ("telegram_interval", int),
-        "REDBELLY_TELEGRAM_TOKEN": "telegram_token",
-        "REDBELLY_TELEGRAM_CHAT_ID": "telegram_chat_id"
-    }
-    
-    for env_var, config_key in env_vars.items():
-        env_value = os.getenv(env_var)
-        if env_value:
-            try:
-                if isinstance(config_key, tuple):
-                    key, converter = config_key
-                    config[key] = converter(env_value)
-                else:
-                    config[config_key] = env_value
-                logger.info(f"Loaded {env_var} from environment")
-            except Exception as e:
-                logger.warning(f"Invalid environment variable {env_var}: {e}")
-    
-    return config
+            print(json.dumps(fetch_status_udp(cfg["udp_host"], cfg["udp_port"]), indent=2))
+        except ConnectionError as e:
+            sys.exit(f"FAILED: {e}")
+        return
+    if a.once or a.test_telegram:
+        s, err = collect(cfg)
+        sysi = system_info()
+        reward = get_balance(cfg["rpc_url"], cfg["reward_address"]) if cfg["reward_address"] else None
+        text = report(s, get_governor_status() if s else "Unknown", reward, sysi, problems(s, cfg, sysi, err), cfg)
+        if a.test_telegram:
+            if not tg:
+                sys.exit("No telegram_token / telegram_chat_id in the config")
+            sys.exit(0 if tg.send(text) else "Telegram send failed: check the token and chat id")
+        print(text.replace("<b>", "").replace("</b>", ""))
+        return
+    if not tg:
+        log.info("no Telegram settings: console/log only")
+    try:
+        run(cfg, tg, a.console)
+    except KeyboardInterrupt:
+        if tg:
+            tg.send("🛑 <b>Redbelly Monitor stopped</b>")
 
-def create_sample_config():
-    """Create sample configuration file"""
-    sample_config = {
-        "node_address": "http://localhost:6539",
-        "min_balance": 10,
-        "refresh_seconds": 5,
-        "telegram_interval": 3600, # you can ignore this
-        "telegram_token": "YOUR_BOT_TOKEN_HERE", # You can hardcoded this or ignore it
-        "telegram_chat_id": "YOUR_CHAT_ID_HERE" # You can hardcoded this or ignore it
-    }
-    
-    with open("redbelly_config.json", 'w') as f:
-        json.dump(sample_config, f, indent=4)
-    
-    print("✅ Sample config created: redbelly_config.json")
-    print("📝 Edit the file with your actual values:")
-    print("   - telegram_token: Get from @BotFather on Telegram")
-    print("   - telegram_chat_id: Get from @userinfobot on Telegram")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Redbelly Node Monitor with Telegram Reports")
-    parser.add_argument("--create-config", action="store_true", help="Create sample config file")
-    parser.add_argument("-a", "--address", type=str, help="Override node address")
-    parser.add_argument("-mb", "--minBalance", type=int, help="Override minimum balance")
-    parser.add_argument("-r", "--refreshSeconds", type=int, help="Override console refresh rate")
-    parser.add_argument("-ti", "--telegramInterval", type=int, help="Override telegram interval")
-    parser.add_argument("-t", "--telegramToken", type=str, help="Override telegram token")
-    parser.add_argument("-c", "--chatId", type=str, help="Override chat ID")
-    
-    args = parser.parse_args()
-    
-    # Create sample config if requested
-    if args.create_config:
-        create_sample_config()
-        exit(0)
-    
-    # Load configuration
-    config = load_config()
-    
-    # Apply command line overrides
-    if args.address:
-        config["node_address"] = args.address
-    if args.minBalance is not None:
-        config["min_balance"] = args.minBalance
-    if args.refreshSeconds is not None:
-        config["refresh_seconds"] = args.refreshSeconds
-    if args.telegramInterval is not None:
-        config["telegram_interval"] = args.telegramInterval
-    if args.telegramToken:
-        config["telegram_token"] = args.telegramToken
-    if args.chatId:
-        config["telegram_chat_id"] = args.chatId
-    
-    # Setup Telegram bot
-    telegram_bot = None
-    if config["telegram_token"] and config["telegram_chat_id"]:
-        telegram_bot = TelegramBot(config["telegram_token"], config["telegram_chat_id"])
-        logger.info("✅ Telegram bot enabled")
-    else:
-        logger.info("ℹ️  No Telegram credentials - console only mode")
-        print("\n📱 To enable Telegram notifications:")
-        print("   Method 1 - Environment variables:")
-        print("     export REDBELLY_TELEGRAM_TOKEN='your_token'")
-        print("     export REDBELLY_TELEGRAM_CHAT_ID='your_chat_id'")
-        print("   Method 2 - Config file:")
-        print("     python redbelly_monitor.py --create-config")
-        print("   Method 3 - Command line:")
-        print("     python redbelly_monitor.py -t 'token' -c 'chat_id'")
-        print()
-    
-    logger.info(f"🚀 Starting monitor:")
-    logger.info(f"   Node: {config['node_address']}")
-    logger.info(f"   Console refresh: {config['refresh_seconds']}s")
-    logger.info(f"   Telegram reports: {config['telegram_interval']}s")
-    logger.info(f"   Min balance: {config['min_balance']} RBNT")
-    
-    run_loop(
-        config["node_address"], 
-        config["min_balance"], 
-        config["refresh_seconds"], 
-        config["telegram_interval"], 
-        telegram_bot
-    )
+    main()
