@@ -209,7 +209,7 @@ def parse_status(d: dict, cfg: dict) -> dict:
 def problems(s: dict | None, cfg: dict, sysi: dict, err: str | None) -> dict:
     """Current problems as {key: text}. Keys stay stable so each problem alerts once."""
     p = {}
-    if not service_active(cfg["service_name"]):
+    if cfg["service_name"] and not service_active(cfg["service_name"]):
         p["service"] = f"systemd service {cfg['service_name']} is NOT active"
     if err:
         p["status"] = f"Status server unreachable: {err}"
